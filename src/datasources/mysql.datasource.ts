@@ -4,12 +4,7 @@ import {juggler} from '@loopback/repository';
 const config = {
   name: 'mysql',
   connector: 'mysql',
-  url: 'mysqlaws.cfauaecs6vva.us-east-1.rds.amazonaws.com',
-  host: 'localhost',
-  port: 3306,
-  user: 'admin',
-  password: 'N0qC697G6C8O',
-  database: 'funerariaDB'
+  url: ''
 };
 
 // Observe application's life cycle to disconnect the datasource when
