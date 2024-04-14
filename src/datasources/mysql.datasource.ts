@@ -3,9 +3,13 @@ import {juggler} from '@loopback/repository';
 import {ConfiguracionSeguridad} from '../config/seguridad.config';
 
 const config = {
-  name: 'mysql',
-  connector: 'mysql',
+  name: ConfiguracionSeguridad.mysqlName,
+  connector: ConfiguracionSeguridad.mysqlConnector,
   url: ConfiguracionSeguridad.mysqlConnectionString,
+  port: ConfiguracionSeguridad.mysqlPort,
+  user: ConfiguracionSeguridad.mysqlUser,
+  password: ConfiguracionSeguridad.mysqlPassword,
+  database: ConfiguracionSeguridad.mysqlDatabase,
 };
 
 // Observe application's life cycle to disconnect the datasource when
