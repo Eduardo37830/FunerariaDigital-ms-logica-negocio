@@ -5,7 +5,11 @@ import {ConfiguracionSeguridad} from '../config/seguridad.config';
 const config = {
   name: 'mysql',
   connector: 'mysql',
-  url: ConfiguracionSeguridad.mysqlConnectionString,
+  host: 'mysqlaws.cfauaecs6vva.us-east-1.rds.amazonaws.com',
+  port: 3306,
+  user: 'admin',
+  password: 'N0qC697G6C8O',
+  database: 'funerariadb'
 };
 
 // Observe application's life cycle to disconnect the datasource when
