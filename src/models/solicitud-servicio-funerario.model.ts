@@ -1,5 +1,4 @@
-import {Model, model, property, hasOne} from '@loopback/repository';
-import {Resena} from './resena.model';
+import {Model, model, property} from '@loopback/repository';
 
 @model()
 export class SolicitudServicioFunerario extends Model {
@@ -45,9 +44,6 @@ export class SolicitudServicioFunerario extends Model {
     required: true,
   })
   estado: boolean;
-
-  @hasOne(() => Resena)
-  resena: Resena;
 
   constructor(data?: Partial<SolicitudServicioFunerario>) {
     super(data);

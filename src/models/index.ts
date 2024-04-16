@@ -14,5 +14,4 @@ export * from './solicitud-servicio-funerario.model';
 export * from './estado-solicitud.model';
 export * from './beneficiario.model';
 export * from './estado-beneficiario.model';
-export * from './resena.model';
 export * from './administrador.model';
