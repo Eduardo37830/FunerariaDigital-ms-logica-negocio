@@ -14,3 +14,6 @@ export * from './beneficiario.model';
 export * from './estado-beneficiario.model';
 export * from './administrador.model';
 export * from './conductor.model';
+export * from './servicio-funerario.model';
+export * from './cliente-plan.model';
+export * from './estado-servicio.model';
