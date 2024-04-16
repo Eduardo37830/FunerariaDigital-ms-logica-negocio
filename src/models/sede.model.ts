@@ -25,7 +25,7 @@ export class Sede extends Entity {
     required: true,
   })
   direccion: string;
-
+  
 
   constructor(data?: Partial<Sede>) {
     super(data);

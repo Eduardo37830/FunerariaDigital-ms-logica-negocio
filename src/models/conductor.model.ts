@@ -1,8 +1,7 @@
-import {Model, model, property, hasMany, Entity} from '@loopback/repository';
-import {Beneficiario} from './beneficiario.model';
+import {Entity, model, property} from '@loopback/repository';
 
 @model()
-export class Cliente extends Entity {
+export class Conductor extends Entity {
   @property({
     type: 'number',
     id: true,
@@ -48,30 +47,28 @@ export class Cliente extends Entity {
     type: 'string',
     required: true,
   })
+  responsabilidades: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  ciudadResidencia: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   direccion: string;
 
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  estado: boolean;
 
-  @property({
-    type: 'date',
-    required: true,
-  })
-  fechaRegistro: string;
-
-  @hasMany(() => Beneficiario)
-  beneficiarios: Beneficiario[];
-
-  constructor(data?: Partial<Cliente>) {
+  constructor(data?: Partial<Conductor>) {
     super(data);
   }
 }
 
-export interface ClienteRelations {
+export interface ConductorRelations {
   // describe navigational properties here
 }
 
-export type ClienteWithRelations = Cliente & ClienteRelations;
+export type ConductorWithRelations = Conductor & ConductorRelations;

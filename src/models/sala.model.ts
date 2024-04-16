@@ -22,10 +22,22 @@ export class Sala extends Entity {
   capacidad: number;
 
   @property({
-    type: 'number',
+    type: 'date',
+    required: true,
   })
-  idSucursal?: number;
+  horaEntradaCuerpo: Date;
 
+  @property({
+    type: 'date',
+    required: true,
+  })
+  horaSalidaCuerpo: Date;
+
+  @property({
+    type: 'boolean',
+    required: true,
+  })
+  disponible: boolean;
 
   constructor(data?: Partial<Sala>) {
     super(data);

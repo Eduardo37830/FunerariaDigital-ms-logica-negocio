@@ -8,10 +8,9 @@ export * from './sala.model';
 export * from './sede.model';
 export * from './servicio-plan.model';
 export * from './servicio.model';
-export * from './sucursal.model';
 
 export * from './solicitud-servicio-funerario.model';
-export * from './estado-solicitud.model';
 export * from './beneficiario.model';
 export * from './estado-beneficiario.model';
 export * from './administrador.model';
+export * from './conductor.model';
