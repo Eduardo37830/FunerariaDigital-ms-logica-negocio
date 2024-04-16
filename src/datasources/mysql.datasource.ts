@@ -3,7 +3,7 @@ import {juggler} from '@loopback/repository';
 import {ConfiguracionSeguridad} from '../config/seguridad.config';
 
 const config = {
-  name: ConfiguracionSeguridad.mysqlName,
+  name: "mysql",
   connector: ConfiguracionSeguridad.mysqlConnector,
   url: ConfiguracionSeguridad.mysqlConnectionString,
   port: ConfiguracionSeguridad.mysqlPort,
@@ -11,6 +11,16 @@ const config = {
   password: ConfiguracionSeguridad.mysqlPassword,
   database: ConfiguracionSeguridad.mysqlDatabase,
 };
+
+/* const config = {
+  name: "mysql",
+  connector: "mysql",
+  url: "mysqlaws.cfauaecs6vva.us-east-1.rds.amazonaws.com",
+  port: 3306,
+  user: "admin",
+  password: "N0qC697G6C8O",
+  database: "funerariadb",
+}; */
 
 // Observe application's life cycle to disconnect the datasource when
 // application is stopped. This allows the application to be shut down
