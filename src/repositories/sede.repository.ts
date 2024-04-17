@@ -1,8 +1,9 @@
 import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
+import {DefaultCrudRepository, repository, BelongsToAccessor, HasManyRepositoryFactory} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {Sede, SedeRelations, Ciudad} from '../models';
+import {Sede, SedeRelations, Ciudad, Sala} from '../models';
 import {CiudadRepository} from './ciudad.repository';
+import {SalaRepository} from './sala.repository';
 
 export class SedeRepository extends DefaultCrudRepository<
   Sede,
@@ -12,10 +13,14 @@ export class SedeRepository extends DefaultCrudRepository<
 
   public readonly ciudad: BelongsToAccessor<Ciudad, typeof Sede.prototype.id>;
 
+  public readonly salas: HasManyRepositoryFactory<Sala, typeof Sede.prototype.id>;
+
   constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('CiudadRepository') protected ciudadRepositoryGetter: Getter<CiudadRepository>,
+    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('CiudadRepository') protected ciudadRepositoryGetter: Getter<CiudadRepository>, @repository.getter('SalaRepository') protected salaRepositoryGetter: Getter<SalaRepository>,
   ) {
     super(Sede, dataSource);
+    this.salas = this.createHasManyRepositoryFactoryFor('salas', salaRepositoryGetter,);
+    this.registerInclusionResolver('salas', this.salas.inclusionResolver);
     this.ciudad = this.createBelongsToAccessorFor('ciudad', ciudadRepositoryGetter,);
     this.registerInclusionResolver('ciudad', this.ciudad.inclusionResolver);
   }
