@@ -26,3 +26,4 @@ export * from './solicitud-servicio-funerario-sala-chat.controller';
 export * from './sala-chat-solicitud-servicio-funerario.controller';
 export * from './plan-administrador.controller';
 export * from './administrador-plan.controller';
+export * from './beneficiario-cliente.controller';
