@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 export namespace ConfiguracionSeguridad {
   export const mysqlName = process.env.DB_NAME;
   export const mysqlConnector = process.env.DB_CONNECTOR;
