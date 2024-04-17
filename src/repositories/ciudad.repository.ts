@@ -1,16 +1,22 @@
-import {inject} from '@loopback/core';
-import {DefaultCrudRepository} from '@loopback/repository';
+import {inject, Getter} from '@loopback/core';
+import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {Ciudad, CiudadRelations} from '../models';
+import {Ciudad, CiudadRelations, Departamento} from '../models';
+import {DepartamentoRepository} from './departamento.repository';
 
 export class CiudadRepository extends DefaultCrudRepository<
   Ciudad,
   typeof Ciudad.prototype.id,
   CiudadRelations
 > {
+
+  public readonly departamento: BelongsToAccessor<Departamento, typeof Ciudad.prototype.id>;
+
   constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource,
+    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('DepartamentoRepository') protected departamentoRepositoryGetter: Getter<DepartamentoRepository>,
   ) {
     super(Ciudad, dataSource);
+    this.departamento = this.createBelongsToAccessorFor('departamento', departamentoRepositoryGetter,);
+    this.registerInclusionResolver('departamento', this.departamento.inclusionResolver);
   }
 }
