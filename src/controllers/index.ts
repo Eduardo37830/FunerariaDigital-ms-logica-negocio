@@ -14,3 +14,5 @@ export * from './comentario-solicitud-servicio-funerario.controller';
 export * from './cliente-plan.controller';
 export * from './beneficiario-estado-beneficiario.controller';
 export * from './estado-beneficiario-beneficiario.controller';
+export * from './sede-ciudad.controller';
+export * from './ciudad-sede.controller';
