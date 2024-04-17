@@ -1,10 +1,11 @@
 import {inject, Getter} from '@loopback/core';
 import {DefaultCrudRepository, repository, BelongsToAccessor, HasManyRepositoryFactory} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {Sede, SedeRelations, Ciudad, Sala, Administrador} from '../models';
+import {Sede, SedeRelations, Ciudad, Sala, Administrador, Conductor} from '../models';
 import {CiudadRepository} from './ciudad.repository';
 import {SalaRepository} from './sala.repository';
 import {AdministradorRepository} from './administrador.repository';
+import {ConductorRepository} from './conductor.repository';
 
 export class SedeRepository extends DefaultCrudRepository<
   Sede,
@@ -18,10 +19,14 @@ export class SedeRepository extends DefaultCrudRepository<
 
   public readonly administrador: BelongsToAccessor<Administrador, typeof Sede.prototype.id>;
 
+  public readonly conductors: HasManyRepositoryFactory<Conductor, typeof Sede.prototype.id>;
+
   constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('CiudadRepository') protected ciudadRepositoryGetter: Getter<CiudadRepository>, @repository.getter('SalaRepository') protected salaRepositoryGetter: Getter<SalaRepository>, @repository.getter('AdministradorRepository') protected administradorRepositoryGetter: Getter<AdministradorRepository>,
+    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('CiudadRepository') protected ciudadRepositoryGetter: Getter<CiudadRepository>, @repository.getter('SalaRepository') protected salaRepositoryGetter: Getter<SalaRepository>, @repository.getter('AdministradorRepository') protected administradorRepositoryGetter: Getter<AdministradorRepository>, @repository.getter('ConductorRepository') protected conductorRepositoryGetter: Getter<ConductorRepository>,
   ) {
     super(Sede, dataSource);
+    this.conductors = this.createHasManyRepositoryFactoryFor('conductors', conductorRepositoryGetter,);
+    this.registerInclusionResolver('conductors', this.conductors.inclusionResolver);
     this.administrador = this.createBelongsToAccessorFor('administrador', administradorRepositoryGetter,);
     this.registerInclusionResolver('administrador', this.administrador.inclusionResolver);
     this.salas = this.createHasManyRepositoryFactoryFor('salas', salaRepositoryGetter,);

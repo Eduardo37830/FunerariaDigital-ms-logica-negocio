@@ -20,3 +20,5 @@ export * from './sala-sede.controller';
 export * from './sede-sala.controller';
 export * from './sede-administrador.controller';
 export * from './administrador-sede.controller';
+export * from './conductor-sede.controller';
+export * from './sede-conductor.controller';
