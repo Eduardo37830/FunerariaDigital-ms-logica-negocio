@@ -2,10 +2,13 @@ import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
 import {ConfiguracionSeguridad} from '../config/seguridad.config';
 
+
+console.log("El usuario es:", ConfiguracionSeguridad.mysqlName);
+
 const config = {
-  name: "mysql",
+  name: ConfiguracionSeguridad.mysqlName,
   connector: ConfiguracionSeguridad.mysqlConnector,
-  url: ConfiguracionSeguridad.mysqlConnectionString,
+  host: ConfiguracionSeguridad.mysqlConnectionString,
   port: ConfiguracionSeguridad.mysqlPort,
   user: ConfiguracionSeguridad.mysqlUser,
   password: ConfiguracionSeguridad.mysqlPassword,
