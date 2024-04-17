@@ -27,6 +27,15 @@ export class ClientePlan extends Entity {
   })
   cantidadBeneficiarios: number;
 
+  @property({
+    type: 'number',
+  })
+  clienteId?: number;
+
+  @property({
+    type: 'number',
+  })
+  planId?: number;
 
   constructor(data?: Partial<ClientePlan>) {
     super(data);

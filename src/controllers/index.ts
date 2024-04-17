@@ -11,3 +11,5 @@ export * from './servicio-funerario-solicitud-servicio-funerario.controller';
 export * from './solicitud-servicio-funerario-servicio-funerario.controller';
 export * from './solicitud-servicio-funerario-comentario.controller';
 export * from './comentario-solicitud-servicio-funerario.controller';
+export * from './cliente-plan.controller';
+export * from './beneficiario-estado-beneficiario.controller';
