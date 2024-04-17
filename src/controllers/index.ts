@@ -22,3 +22,5 @@ export * from './sede-administrador.controller';
 export * from './administrador-sede.controller';
 export * from './conductor-sede.controller';
 export * from './sede-conductor.controller';
+export * from './solicitud-servicio-funerario-sala-chat.controller';
+export * from './sala-chat-solicitud-servicio-funerario.controller';
