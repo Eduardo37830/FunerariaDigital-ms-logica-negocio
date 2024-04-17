@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {ServicioFunerario} from './servicio-funerario.model';
 
 @model()
 export class Conductor extends Entity {
@@ -61,6 +62,8 @@ export class Conductor extends Entity {
   })
   direccion: string;
 
+  @hasMany(() => ServicioFunerario)
+  servicioFunerarios: ServicioFunerario[];
 
   constructor(data?: Partial<Conductor>) {
     super(data);

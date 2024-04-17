@@ -5,7 +5,7 @@ import {Beneficiario, BeneficiarioRelations} from '../models';
 
 export class BeneficiarioRepository extends DefaultCrudRepository<
   Beneficiario,
-  typeof Beneficiario.prototype.idBeneficiario,
+  typeof Beneficiario.prototype.id,
   BeneficiarioRelations
 > {
   constructor(
