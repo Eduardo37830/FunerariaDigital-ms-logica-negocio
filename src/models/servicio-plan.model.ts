@@ -27,6 +27,15 @@ export class ServicioPlan extends Entity {
   })
   detalles: string;
 
+  @property({
+    type: 'number',
+  })
+  planId?: number;
+
+  @property({
+    type: 'number',
+  })
+  servicioId?: number;
 
   constructor(data?: Partial<ServicioPlan>) {
     super(data);
