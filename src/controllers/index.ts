@@ -18,3 +18,5 @@ export * from './sede-ciudad.controller';
 export * from './ciudad-sede.controller';
 export * from './sala-sede.controller';
 export * from './sede-sala.controller';
+export * from './sede-administrador.controller';
+export * from './administrador-sede.controller';

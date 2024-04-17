@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasOne} from '@loopback/repository';
+import {Sede} from './sede.model';
 
 @model()
 export class Administrador extends Entity {
@@ -37,6 +38,8 @@ export class Administrador extends Entity {
   })
   fechaRegistro?: string;
 
+  @hasOne(() => Sede)
+  sede: Sede;
 
   constructor(data?: Partial<Administrador>) {
     super(data);
