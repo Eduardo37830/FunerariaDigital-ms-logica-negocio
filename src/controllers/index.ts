@@ -33,3 +33,7 @@ export * from './plan.controller';
 export * from './sala.controller';
 export * from './sede.controller';
 export * from './servicio.controller';
+export * from './administrador.controller';
+export * from './beneficiario.controller';
+export * from './cliente.controller';
+export * from './conductor.controller';
