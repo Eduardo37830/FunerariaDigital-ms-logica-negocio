@@ -10,6 +10,12 @@ export class Departamento extends Entity {
   })
   id?: number;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  Nombre: string;
+
   @hasMany(() => Ciudad)
   ciudads: Ciudad[];
 
