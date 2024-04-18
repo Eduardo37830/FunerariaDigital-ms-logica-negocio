@@ -15,13 +15,35 @@ export class Administrador extends Entity {
     type: 'string',
     required: true,
   })
-  nombre: string;
+  primerNombre: string;
+
+  @property({
+    type: 'string',
+  })
+  segundoNombre?: string;
 
   @property({
     type: 'string',
     required: true,
   })
-  apellidos: string;
+  primerApellido: string;
+
+  @property({
+    type: 'string',
+  })
+  segundoApellido?: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  correo: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  celular: string;
 
   @property({
     type: 'string',
