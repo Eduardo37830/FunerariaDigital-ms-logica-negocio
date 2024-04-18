@@ -37,3 +37,6 @@ export * from './administrador.controller';
 export * from './beneficiario.controller';
 export * from './cliente.controller';
 export * from './conductor.controller';
+export * from './comentario.controller';
+export * from './servicio-funerario.controller';
+export * from './solicitud-servicio-funerario.controller';
