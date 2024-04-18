@@ -40,3 +40,6 @@ export * from './conductor.controller';
 export * from './comentario.controller';
 export * from './servicio-funerario.controller';
 export * from './solicitud-servicio-funerario.controller';
+export * from './estado-beneficiario.controller';
+export * from './estado-servicio.controller';
+export * from './sala-chat.controller';
