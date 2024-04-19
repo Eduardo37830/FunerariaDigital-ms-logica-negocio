@@ -1,9 +1,26 @@
-import {Entity, Model, model, property, hasMany, belongsTo} from '@loopback/repository';
-import {ServicioFunerario} from './servicio-funerario.model';
+import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
 import {Comentario} from './comentario.model';
 import {SalaChat} from './sala-chat.model';
+import {ServicioFunerario} from './servicio-funerario.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_solicitudServicioFunerario_comentarioId: {
+        name: 'fk_solicitudServicioFunerario_comentarioId',
+        entity: 'Comentario',
+        entityKey: 'id',
+        foreignKey: 'comentarioId',
+      },
+      fk_solicitudServicioFunerario_salaChatId: {
+        name: 'fk_solicitudServicioFunerario_salaChatId',
+        entity: 'SalaChat',
+        entityKey: 'id',
+        foreignKey: 'salaChatId',
+      },
+    },
+  },
+})
 export class SolicitudServicioFunerario extends Entity {
   @property({
     type: 'number',
@@ -23,12 +40,6 @@ export class SolicitudServicioFunerario extends Entity {
     required: true,
   })
   ubicacionDelCuerpo: string;
-
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  traslado: boolean;
 
   @property({
     type: 'string',

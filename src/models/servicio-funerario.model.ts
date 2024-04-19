@@ -1,10 +1,39 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
-import {Sala} from './sala.model';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Conductor} from './conductor.model';
 import {EstadoServicio} from './estado-servicio.model';
+import {Sala} from './sala.model';
 import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_servicioFunerario_salaId: {
+        name: 'fk_servicioFunerario_salaId',
+        entity: 'Sala',
+        entityKey: 'id',
+        foreignKey: 'salaId',
+      },
+      fk_servicioFunerario_conductorId: {
+        name: 'fk_servicioFunerario_conductorId',
+        entity: 'Conductor',
+        entityKey: 'id',
+        foreignKey: 'conductorId',
+      },
+      fk_servicioFunerario_estadoServicioId: {
+        name: 'fk_servicioFunerario_estadoServicioId',
+        entity: 'EstadoServicio',
+        entityKey: 'id',
+        foreignKey: 'estadoServicioId',
+      },
+      fk_servicioFunerario_solicitudServicioFunerarioId: {
+        name: 'fk_servicioFunerario_solicitudServicioFunerarioId',
+        entity: 'SolicitudServicioFunerario',
+        entityKey: 'id',
+        foreignKey: 'solicitudServicioFunerarioId',
+      },
+    },
+  },
+})
 export class ServicioFunerario extends Entity {
   @property({
     type: 'number',

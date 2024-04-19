@@ -1,9 +1,20 @@
-import {Entity, model, property, hasMany, belongsTo} from '@loopback/repository';
-import {Servicio} from './servicio.model';
-import {ServicioPlan} from './servicio-plan.model';
+import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
 import {Administrador} from './administrador.model';
+import {ServicioPlan} from './servicio-plan.model';
+import {Servicio} from './servicio.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_plan_administradorId: {
+        name: 'fk_plan_administradorId',
+        entity: 'Administrador',
+        entityKey: 'id',
+        foreignKey: 'administradorId',
+      },
+    },
+  },
+})
 export class Plan extends Entity {
   @property({
     type: 'number',

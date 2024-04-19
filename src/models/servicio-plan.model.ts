@@ -1,6 +1,23 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_servicioId: {
+        name: 'fk_servicioId',
+        entity: 'Servicio',
+        entityKey: 'id',
+        foreignKey: 'servicioId',
+      },
+      fk_planId: {
+        name: 'fk_planId',
+        entity: 'Plan',
+        entityKey: 'id',
+        foreignKey: 'planId',
+      },
+    },
+  },
+})
 export class ServicioPlan extends Entity {
   @property({
     type: 'number',
@@ -8,12 +25,6 @@ export class ServicioPlan extends Entity {
     generated: true,
   })
   id?: number;
-
-  @property({
-    type: 'number',
-    required: true,
-  })
-  idPlan: number;
 
   @property({
     type: 'number',

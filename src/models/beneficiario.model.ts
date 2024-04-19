@@ -1,8 +1,25 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
-import {EstadoBeneficiario} from './estado-beneficiario.model';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Cliente} from './cliente.model';
+import {EstadoBeneficiario} from './estado-beneficiario.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_estadoBeneficiarioId: {
+        name: 'fk_estadoBeneficiarioId',
+        entity: 'EstadoBeneficiario',
+        entityKey: 'id',
+        foreignKey: 'estadoBeneficiarioId',
+      },
+      fk_clienteId: {
+        name: 'fk_clienteId',
+        entity: 'Cliente',
+        entityKey: 'id',
+        foreignKey: 'clienteId',
+      },
+    },
+  },
+})
 export class Beneficiario extends Entity {
   @property({
     type: 'number',

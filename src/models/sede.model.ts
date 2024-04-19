@@ -1,10 +1,27 @@
-import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
-import {Ciudad} from './ciudad.model';
-import {Sala} from './sala.model';
+import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
 import {Administrador} from './administrador.model';
+import {Ciudad} from './ciudad.model';
 import {Conductor} from './conductor.model';
+import {Sala} from './sala.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_sede_ciudadId: {
+        name: 'fk_sede_ciudadId',
+        entity: 'Ciudad',
+        entityKey: 'id',
+        foreignKey: 'ciudadId',
+      },
+      fk_sede_administradorId: {
+        name: 'fk_sede_administradorId',
+        entity: 'Administrador',
+        entityKey: 'id',
+        foreignKey: 'administradorId',
+      },
+    },
+  },
+})
 export class Sede extends Entity {
   @property({
     type: 'number',
@@ -12,11 +29,6 @@ export class Sede extends Entity {
     generated: true,
   })
   id?: number;
-
-  @property({
-    type: 'number',
-  })
-  idCiudad?: number;
 
   @property({
     type: 'string',
