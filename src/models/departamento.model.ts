@@ -1,4 +1,4 @@
-import {Entity, hasMany, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
 import {Ciudad} from './ciudad.model';
 
 @model()
@@ -12,9 +12,9 @@ export class Departamento extends Entity {
 
   @property({
     type: 'string',
-    required: true
+    required: true,
   })
-  nombre: string
+  Nombre: string;
 
   @hasMany(() => Ciudad)
   ciudads: Ciudad[];
