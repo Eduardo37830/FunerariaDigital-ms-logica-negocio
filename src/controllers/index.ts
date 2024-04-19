@@ -43,3 +43,5 @@ export * from './solicitud-servicio-funerario.controller';
 export * from './estado-beneficiario.controller';
 export * from './estado-servicio.controller';
 export * from './sala-chat.controller';
+export * from './cliente-solicitud-servicio-funerario.controller';
+export * from './solicitud-servicio-funerario-cliente.controller';

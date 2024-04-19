@@ -1,4 +1,5 @@
 import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
+import {Cliente} from './cliente.model';
 import {Comentario} from './comentario.model';
 import {SalaChat} from './sala-chat.model';
 import {ServicioFunerario} from './servicio-funerario.model';
@@ -18,6 +19,7 @@ import {ServicioFunerario} from './servicio-funerario.model';
         entityKey: 'id',
         foreignKey: 'salaChatId',
       },
+      //clienteId
     },
   },
 })
@@ -67,6 +69,9 @@ export class SolicitudServicioFunerario extends Entity {
 
   @belongsTo(() => SalaChat)
   salaChatId: number;
+
+  @belongsTo(() => Cliente)
+  clienteId: number;
 
   constructor(data?: Partial<SolicitudServicioFunerario>) {
     super(data);
