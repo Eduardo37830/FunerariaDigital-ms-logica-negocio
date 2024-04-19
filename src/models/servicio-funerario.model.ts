@@ -1,4 +1,5 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {Comentario} from './comentario.model';
 import {Conductor} from './conductor.model';
 import {EstadoServicio} from './estado-servicio.model';
 import {Sala} from './sala.model';
@@ -31,6 +32,12 @@ import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
         entityKey: 'id',
         foreignKey: 'solicitudServicioFunerarioId',
       },
+      fk_servicioFunerario_comentarioId: {
+        name: 'fk_servicioFunerario_comentarioId',
+        entity: 'Comentario',
+        entityKey: 'id',
+        foreignKey: 'comentarioId',
+      },
     },
   },
 })
@@ -60,6 +67,12 @@ export class ServicioFunerario extends Entity {
   })
   tipo: string;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  codigoUnicoServicio: string;
+
   @belongsTo(() => Sala)
   salaId: number;
 
@@ -71,6 +84,9 @@ export class ServicioFunerario extends Entity {
 
   @belongsTo(() => SolicitudServicioFunerario)
   solicitudServicioFunerarioId: number;
+
+  @belongsTo(() => Comentario)
+  comentarioId: number;
 
   constructor(data?: Partial<ServicioFunerario>) {
     super(data);

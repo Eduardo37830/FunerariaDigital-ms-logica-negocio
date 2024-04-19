@@ -1,18 +1,11 @@
 import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
 import {Cliente} from './cliente.model';
-import {Comentario} from './comentario.model';
 import {SalaChat} from './sala-chat.model';
 import {ServicioFunerario} from './servicio-funerario.model';
 
 @model({
   settings: {
     foreignKeys: {
-      fk_solicitudServicioFunerario_comentarioId: {
-        name: 'fk_solicitudServicioFunerario_comentarioId',
-        entity: 'Comentario',
-        entityKey: 'id',
-        foreignKey: 'comentarioId',
-      },
       fk_solicitudServicioFunerario_salaChatId: {
         name: 'fk_solicitudServicioFunerario_salaChatId',
         entity: 'SalaChat',
@@ -53,19 +46,10 @@ export class SolicitudServicioFunerario extends Entity {
     type: 'string',
     required: true,
   })
-  codigoUnicoServicio: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
   estado: boolean;
 
   @hasMany(() => ServicioFunerario)
   servicioFunerarios: ServicioFunerario[];
-
-  @belongsTo(() => Comentario)
-  comentarioId: number;
 
   @belongsTo(() => SalaChat)
   salaChatId: number;

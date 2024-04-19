@@ -1,8 +1,8 @@
 import {inject, Getter} from '@loopback/core';
 import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {Comentario, ComentarioRelations, SolicitudServicioFunerario} from '../models';
-import {SolicitudServicioFunerarioRepository} from './solicitud-servicio-funerario.repository';
+import {Comentario, ComentarioRelations, ServicioFunerario} from '../models';
+import {ServicioFunerarioRepository} from './servicio-funerario.repository';
 
 export class ComentarioRepository extends DefaultCrudRepository<
   Comentario,
@@ -10,13 +10,13 @@ export class ComentarioRepository extends DefaultCrudRepository<
   ComentarioRelations
 > {
 
-  public readonly solicitudServicioFunerarios: HasManyRepositoryFactory<SolicitudServicioFunerario, typeof Comentario.prototype.id>;
+  public readonly servicioFunerarios: HasManyRepositoryFactory<ServicioFunerario, typeof Comentario.prototype.id>;
 
   constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('SolicitudServicioFunerarioRepository') protected solicitudServicioFunerarioRepositoryGetter: Getter<SolicitudServicioFunerarioRepository>,
+    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('ServicioFunerarioRepository') protected servicioFunerarioRepositoryGetter: Getter<ServicioFunerarioRepository>,
   ) {
     super(Comentario, dataSource);
-    this.solicitudServicioFunerarios = this.createHasManyRepositoryFactoryFor('solicitudServicioFunerarios', solicitudServicioFunerarioRepositoryGetter,);
-    this.registerInclusionResolver('solicitudServicioFunerarios', this.solicitudServicioFunerarios.inclusionResolver);
+    this.servicioFunerarios = this.createHasManyRepositoryFactoryFor('servicioFunerarios', servicioFunerarioRepositoryGetter,);
+    this.registerInclusionResolver('servicioFunerarios', this.servicioFunerarios.inclusionResolver);
   }
 }

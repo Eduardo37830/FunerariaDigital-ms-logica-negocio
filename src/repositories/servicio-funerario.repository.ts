@@ -1,10 +1,11 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {BelongsToAccessor, DefaultCrudRepository, repository} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {ServicioFunerario, ServicioFunerarioRelations, Sala, Conductor, EstadoServicio, SolicitudServicioFunerario} from '../models';
-import {SalaRepository} from './sala.repository';
+import {Conductor, EstadoServicio, Sala, ServicioFunerario, ServicioFunerarioRelations, SolicitudServicioFunerario, Comentario} from '../models';
+import {ComentarioRepository} from './comentario.repository';
 import {ConductorRepository} from './conductor.repository';
 import {EstadoServicioRepository} from './estado-servicio.repository';
+import {SalaRepository} from './sala.repository';
 import {SolicitudServicioFunerarioRepository} from './solicitud-servicio-funerario.repository';
 
 export class ServicioFunerarioRepository extends DefaultCrudRepository<
@@ -21,10 +22,14 @@ export class ServicioFunerarioRepository extends DefaultCrudRepository<
 
   public readonly solicitudServicioFunerario: BelongsToAccessor<SolicitudServicioFunerario, typeof ServicioFunerario.prototype.id>;
 
+  public readonly comentario: BelongsToAccessor<Comentario, typeof ServicioFunerario.prototype.id>;
+
   constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('SalaRepository') protected salaRepositoryGetter: Getter<SalaRepository>, @repository.getter('ConductorRepository') protected conductorRepositoryGetter: Getter<ConductorRepository>, @repository.getter('EstadoServicioRepository') protected estadoServicioRepositoryGetter: Getter<EstadoServicioRepository>, @repository.getter('SolicitudServicioFunerarioRepository') protected solicitudServicioFunerarioRepositoryGetter: Getter<SolicitudServicioFunerarioRepository>,
+    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('SalaRepository') protected salaRepositoryGetter: Getter<SalaRepository>, @repository.getter('ConductorRepository') protected conductorRepositoryGetter: Getter<ConductorRepository>, @repository.getter('EstadoServicioRepository') protected estadoServicioRepositoryGetter: Getter<EstadoServicioRepository>, @repository.getter('SolicitudServicioFunerarioRepository') protected solicitudServicioFunerarioRepositoryGetter: Getter<SolicitudServicioFunerarioRepository>, @repository.getter('ComentarioRepository') protected comentarioRepositoryGetter: Getter<ComentarioRepository>,
   ) {
     super(ServicioFunerario, dataSource);
+    this.comentario = this.createBelongsToAccessorFor('comentario', comentarioRepositoryGetter,);
+    this.registerInclusionResolver('comentario', this.comentario.inclusionResolver);
     this.solicitudServicioFunerario = this.createBelongsToAccessorFor('solicitudServicioFunerario', solicitudServicioFunerarioRepositoryGetter,);
     this.registerInclusionResolver('solicitudServicioFunerario', this.solicitudServicioFunerario.inclusionResolver);
     this.estadoServicio = this.createBelongsToAccessorFor('estadoServicio', estadoServicioRepositoryGetter,);
