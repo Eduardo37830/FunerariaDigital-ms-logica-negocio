@@ -1,18 +1,17 @@
 import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
 import {Cliente} from './cliente.model';
-import {SalaChat} from './sala-chat.model';
 import {ServicioFunerario} from './servicio-funerario.model';
+import {SalaChat} from './sala-chat.model';
 
 @model({
   settings: {
     foreignKeys: {
-      fk_solicitudServicioFunerario_salaChatId: {
-        name: 'fk_solicitudServicioFunerario_salaChatId',
-        entity: 'SalaChat',
+      fk_solicitudServicioFunerario_clienteId: {
+        name: 'fk_solicitudServicioFunerario_clienteId',
+        entity: 'Cliente',
         entityKey: 'id',
-        foreignKey: 'salaChatId',
+        foreignKey: 'clienteId',
       },
-      //clienteId
     },
   },
 })
@@ -46,16 +45,16 @@ export class SolicitudServicioFunerario extends Entity {
     type: 'string',
     required: true,
   })
-  estado: boolean;
+  estadoAceptado: boolean;
 
   @hasMany(() => ServicioFunerario)
   servicioFunerarios: ServicioFunerario[];
 
-  @belongsTo(() => SalaChat)
-  salaChatId: number;
-
   @belongsTo(() => Cliente)
   clienteId: number;
+
+  @hasMany(() => SalaChat)
+  salaChats: SalaChat[];
 
   constructor(data?: Partial<SolicitudServicioFunerario>) {
     super(data);

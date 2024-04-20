@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,24 +8,29 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
 import {SolicitudServicioFunerario} from '../models';
-import {SolicitudServicioFunerarioRepository} from '../repositories';
+import {SalaChatRepository, SolicitudServicioFunerarioRepository} from '../repositories';
+import {SeguridadService} from '../services/seguridad.service';
 
 export class SolicitudServicioFunerarioController {
   constructor(
     @repository(SolicitudServicioFunerarioRepository)
-    public solicitudServicioFunerarioRepository : SolicitudServicioFunerarioRepository,
-  ) {}
+    public solicitudServicioFunerarioRepository: SolicitudServicioFunerarioRepository,
+    @service(SeguridadService)
+    public servicioSeguridad: SeguridadService,
+    @repository(SalaChatRepository)
+    public salaChatRepository: SalaChatRepository,
+  ) { }
 
   @post('/solicitud-servicio-funerario')
   @response(200, {
@@ -146,5 +152,44 @@ export class SolicitudServicioFunerarioController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.solicitudServicioFunerarioRepository.deleteById(id);
+  }
+
+  @post('/solicitud-servicios', {
+    responses: {
+      '200': {
+        description: 'SolicitudServicio model instance',
+        content: {'application/json': {schema: getModelSchemaRef(SolicitudServicioFunerario)}},
+      },
+    },
+  })
+  async create5(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(SolicitudServicioFunerario, {
+            title: 'NewSolicitudServicio',
+            exclude: ['id'],
+          }),
+        },
+      },
+    })
+    solicitudServicio: Omit<SolicitudServicioFunerario, 'id'>,
+  ): Promise<SolicitudServicioFunerario> {
+    // Crear la solicitud de servicio
+    const newSolicitudServicio = await this.solicitudServicioFunerarioRepository.create(solicitudServicio);
+
+    // Generar un código único para la sala de chat
+    const codigoSalaChat = this.servicioSeguridad.crearTextoAleatorio(6)
+
+    // Crear la sala de chat asociada
+    const nuevaSalaChat = await this.salaChatRepository.create({
+      codigoUnico: codigoSalaChat,
+      solicitudServicioFunerarioId: newSolicitudServicio.id,
+    });
+
+    // Actualizar la solicitud de servicio con la sala de chat asociada
+    newSolicitudServicio.salaChats = [nuevaSalaChat]; // Assign the nuevaSalaChat object directly
+    await this.solicitudServicioFunerarioRepository.update(newSolicitudServicio);
+    return newSolicitudServicio;
   }
 }

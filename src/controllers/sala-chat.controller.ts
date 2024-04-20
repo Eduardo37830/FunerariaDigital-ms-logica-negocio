@@ -7,24 +7,28 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
-  response,
+  response
 } from '@loopback/rest';
 import {SalaChat} from '../models';
 import {SalaChatRepository} from '../repositories';
+import {SeguridadService} from '../services/seguridad.service';
 
 export class SalaChatController {
   constructor(
     @repository(SalaChatRepository)
-    public salaChatRepository : SalaChatRepository,
-  ) {}
+    public salaChatRepository: SalaChatRepository,
+    @repository(SeguridadService)
+    public seguridad: SeguridadService,
+
+  ) { }
 
   @post('/sala-chat')
   @response(200, {
@@ -148,3 +152,4 @@ export class SalaChatController {
     await this.salaChatRepository.deleteById(id);
   }
 }
+

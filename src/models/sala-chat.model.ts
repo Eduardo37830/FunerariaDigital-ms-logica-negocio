@@ -1,7 +1,18 @@
-import {Entity, Model, model, property, hasOne} from '@loopback/repository';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_salaChat_solicitudServicioFunerarioId: {
+        name: 'fk_sala_solicitudServicioFunerarioId',
+        entity: 'SolicitudServicioFunerario',
+        entityKey: 'id',
+        foreignKey: 'solicitudServicioFunerarioId',
+      },
+    },
+  },
+})
 export class SalaChat extends Entity {
   @property({
     type: 'number',
@@ -17,22 +28,17 @@ export class SalaChat extends Entity {
   nombre: string;
 
   @property({
-    type: 'number',
-  })
-  capacidad?: number;
-
-  @property({
-    type: 'string',
-  })
-  mensaje?: string;
-
-  @property({
     type: 'string',
   })
   descripcion?: string;
 
-  @hasOne(() => SolicitudServicioFunerario)
-  solicitudServicioFunerario: SolicitudServicioFunerario;
+  @property({
+    type: 'string',
+  })
+  codigoUnico: string;
+
+  @belongsTo(() => SolicitudServicioFunerario)
+  solicitudServicioFunerarioId: number;
 
   constructor(data?: Partial<SalaChat>) {
     super(data);
