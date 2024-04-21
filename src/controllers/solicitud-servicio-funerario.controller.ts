@@ -20,8 +20,12 @@ import {
 } from '@loopback/rest';
 import {ConfiguracionNotificaciones} from '../config/notificaciones.config';
 import {SolicitudServicioFunerario} from '../models';
-import {ClienteRepository, SalaChatRepository, SolicitudServicioFunerarioRepository} from '../repositories';
+import {ClienteRepository,
+  SalaChatRepository,
+  SolicitudServicioFunerarioRepository,
+} from '../repositories';
 import {NotificacionesService} from '../services';
+import {ChatService} from '../services/chat.service';
 import {SeguridadService} from '../services/seguridad.service';
 
 export class SolicitudServicioFunerarioController {
@@ -36,12 +40,18 @@ export class SolicitudServicioFunerarioController {
     public clienteRepository: ClienteRepository,
     @service(NotificacionesService)
     public servicioNotificaciones: NotificacionesService,
-  ) { }
+    @service(ChatService)
+    public chatService: ChatService,
+  ) {}
 
   @post('/solicitud-servicio-funerario')
   @response(200, {
     description: 'SolicitudServicioFunerario model instance',
-    content: {'application/json': {schema: getModelSchemaRef(SolicitudServicioFunerario)}},
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(SolicitudServicioFunerario),
+      },
+    },
   })
   async create(
     @requestBody({
@@ -92,7 +102,8 @@ export class SolicitudServicioFunerarioController {
     content: {'application/json': {schema: CountSchema}},
   })
   async count(
-    @param.where(SolicitudServicioFunerario) where?: Where<SolicitudServicioFunerario>,
+    @param.where(SolicitudServicioFunerario)
+    where?: Where<SolicitudServicioFunerario>,
   ): Promise<Count> {
     return this.solicitudServicioFunerarioRepository.count(where);
   }
@@ -104,13 +115,16 @@ export class SolicitudServicioFunerarioController {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(SolicitudServicioFunerario, {includeRelations: true}),
+          items: getModelSchemaRef(SolicitudServicioFunerario, {
+            includeRelations: true,
+          }),
         },
       },
     },
   })
   async find(
-    @param.filter(SolicitudServicioFunerario) filter?: Filter<SolicitudServicioFunerario>,
+    @param.filter(SolicitudServicioFunerario)
+    filter?: Filter<SolicitudServicioFunerario>,
   ): Promise<SolicitudServicioFunerario[]> {
     return this.solicitudServicioFunerarioRepository.find(filter);
   }
@@ -124,14 +138,20 @@ export class SolicitudServicioFunerarioController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(SolicitudServicioFunerario, {partial: true}),
+          schema: getModelSchemaRef(SolicitudServicioFunerario, {
+            partial: true,
+          }),
         },
       },
     })
     solicitudServicioFunerario: SolicitudServicioFunerario,
-    @param.where(SolicitudServicioFunerario) where?: Where<SolicitudServicioFunerario>,
+    @param.where(SolicitudServicioFunerario)
+    where?: Where<SolicitudServicioFunerario>,
   ): Promise<Count> {
-    return this.solicitudServicioFunerarioRepository.updateAll(solicitudServicioFunerario, where);
+    return this.solicitudServicioFunerarioRepository.updateAll(
+      solicitudServicioFunerario,
+      where,
+    );
   }
 
   @get('/solicitud-servicio-funerario/{id}')
@@ -139,13 +159,16 @@ export class SolicitudServicioFunerarioController {
     description: 'SolicitudServicioFunerario model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(SolicitudServicioFunerario, {includeRelations: true}),
+        schema: getModelSchemaRef(SolicitudServicioFunerario, {
+          includeRelations: true,
+        }),
       },
     },
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(SolicitudServicioFunerario, {exclude: 'where'}) filter?: FilterExcludingWhere<SolicitudServicioFunerario>
+    @param.filter(SolicitudServicioFunerario, {exclude: 'where'})
+    filter?: FilterExcludingWhere<SolicitudServicioFunerario>,
   ): Promise<SolicitudServicioFunerario> {
     return this.solicitudServicioFunerarioRepository.findById(id, filter);
   }
@@ -159,13 +182,18 @@ export class SolicitudServicioFunerarioController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(SolicitudServicioFunerario, {partial: true}),
+          schema: getModelSchemaRef(SolicitudServicioFunerario, {
+            partial: true,
+          }),
         },
       },
     })
     solicitudServicioFunerario: SolicitudServicioFunerario,
   ): Promise<void> {
-    await this.solicitudServicioFunerarioRepository.updateById(id, solicitudServicioFunerario);
+    await this.solicitudServicioFunerarioRepository.updateById(
+      id,
+      solicitudServicioFunerario,
+    );
   }
 
   @put('/solicitud-servicio-funerario/{id}')
@@ -176,7 +204,10 @@ export class SolicitudServicioFunerarioController {
     @param.path.number('id') id: number,
     @requestBody() solicitudServicioFunerario: SolicitudServicioFunerario,
   ): Promise<void> {
-    await this.solicitudServicioFunerarioRepository.replaceById(id, solicitudServicioFunerario);
+    await this.solicitudServicioFunerarioRepository.replaceById(
+      id,
+      solicitudServicioFunerario,
+    );
   }
 
   @del('/solicitud-servicio-funerario/{id}')
@@ -185,5 +216,51 @@ export class SolicitudServicioFunerarioController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.solicitudServicioFunerarioRepository.deleteById(id);
+  }
+
+  @post('/solicitud-servicios', {
+    responses: {
+      '200': {
+        description: 'SolicitudServicio model instance',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(SolicitudServicioFunerario),
+          },
+        },
+      },
+    },
+  })
+  async create5(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(SolicitudServicioFunerario, {
+            title: 'NewSolicitudServicio',
+            exclude: ['id'],
+          }),
+        },
+      },
+    })
+    solicitudServicio: Omit<SolicitudServicioFunerario, 'id'>,
+  ): Promise<SolicitudServicioFunerario> {
+    // Crear la solicitud de servicio
+    const newSolicitudServicio =
+      await this.solicitudServicioFunerarioRepository.create(solicitudServicio);
+
+    // Generar un código único para la sala de chat
+    const codigoSalaChat = this.servicioSeguridad.crearTextoAleatorio(6);
+
+    // Crear la sala de chat asociada
+    const nuevaSalaChat = await this.solicitudServicioFunerarioRepository
+      .salaChats(newSolicitudServicio.id)
+      .create({
+        nombre: 'Nombre de la sala de chat', // Proporciona un nombre para la sala de chat
+        codigoUnico: codigoSalaChat,
+      });
+
+    // Enviar el código único al servidor de chat
+    await this.chatService.enviarCodigoUnico(codigoSalaChat);
+
+    return newSolicitudServicio;
   }
 }

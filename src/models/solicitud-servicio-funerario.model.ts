@@ -48,7 +48,7 @@ export class SolicitudServicioFunerario extends Entity {
   tipoServicio: string; //servicio de sepultura tradicional o si el cuerpo es cremado.
 
   @property({
-    type: 'string',
+    type: 'boolean',
     required: true,
   })
   estadoAceptado: boolean;
