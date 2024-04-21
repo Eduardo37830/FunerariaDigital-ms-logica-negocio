@@ -249,17 +249,20 @@ export class SolicitudServicioFunerarioController {
 
     // Generar un código único para la sala de chat
     const codigoSalaChat = this.servicioSeguridad.crearTextoAleatorio(6);
+    const llaveMaestra = this.servicioSeguridad.crearTextoAleatorio(6);
 
     // Crear la sala de chat asociada
     const nuevaSalaChat = await this.solicitudServicioFunerarioRepository
       .salaChats(newSolicitudServicio.id)
       .create({
-        nombre: 'Nombre de la sala de chat', // Proporciona un nombre para la sala de chat
+        nombre: `Sala de chat: ${codigoSalaChat}`, // Proporciona un nombre para la sala de chat
+        descripcion: `conversatorio lastimoso`, // Proporciona una descripción para la sala de chat
         codigoUnico: codigoSalaChat,
+        llaveMaestra: llaveMaestra,
       });
 
     // Enviar el código único al servidor de chat
-    await this.chatService.enviarCodigoUnico(codigoSalaChat);
+    await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
 
     return newSolicitudServicio;
   }
