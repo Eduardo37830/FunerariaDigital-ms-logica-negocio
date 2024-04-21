@@ -43,23 +43,5 @@ export class SeguridadService {
     return salaChat as SalaChat
   }
 
-  /**
-   * Valida un código de 2fa para un usuario
-   * @param credenciales2fa credenciales del usuario con el código del 2fa
-   * @returns el registro de login o null
-   */
-  /*async validarCodigoSlaChat(credenciales2fa: FactorDeAutentificacionPorCodigo): Promise<Usuario | null> {
-    let login = await this.repositorioLogin.findOne({
-      where: {
-        usuarioId: credenciales2fa.usuarioId,
-        codigo2fa: credenciales2fa.codigo2fa,
-        estadoCodigo2fa: false
-      }
-    });
-    if (login) {
-      let usuario = await this.repositorioUsuario.findById(credenciales2fa.usuarioId);
-      return usuario;
-    }
-    return null;
-  }*/
+  /**validarCodigoSalaChat*/
 }

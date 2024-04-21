@@ -1,7 +1,7 @@
 import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
 import {Cliente} from './cliente.model';
-import {ServicioFunerario} from './servicio-funerario.model';
 import {SalaChat} from './sala-chat.model';
+import {ServicioFunerario} from './servicio-funerario.model';
 
 @model({
   settings: {
@@ -24,6 +24,12 @@ export class SolicitudServicioFunerario extends Entity {
   id?: number;
 
   @property({
+    type: 'number',
+    required: true,
+  })
+  idBeneficiario: number;
+
+  @property({
     type: 'date',
     required: true,
   })
@@ -39,7 +45,7 @@ export class SolicitudServicioFunerario extends Entity {
     type: 'string',
     required: true,
   })
-  tipoServicio: string;
+  tipoServicio: string; //servicio de sepultura tradicional o si el cuerpo es cremado.
 
   @property({
     type: 'string',

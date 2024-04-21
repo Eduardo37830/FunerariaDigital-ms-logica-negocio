@@ -18,8 +18,10 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionNotificaciones} from '../config/notificaciones.config';
 import {SolicitudServicioFunerario} from '../models';
-import {SalaChatRepository, SolicitudServicioFunerarioRepository} from '../repositories';
+import {ClienteRepository, SalaChatRepository, SolicitudServicioFunerarioRepository} from '../repositories';
+import {NotificacionesService} from '../services';
 import {SeguridadService} from '../services/seguridad.service';
 
 export class SolicitudServicioFunerarioController {
@@ -30,6 +32,10 @@ export class SolicitudServicioFunerarioController {
     public servicioSeguridad: SeguridadService,
     @repository(SalaChatRepository)
     public salaChatRepository: SalaChatRepository,
+    @repository(ClienteRepository)
+    public clienteRepository: ClienteRepository,
+    @service(NotificacionesService)
+    public servicioNotificaciones: NotificacionesService,
   ) { }
 
   @post('/solicitud-servicio-funerario')
@@ -50,6 +56,33 @@ export class SolicitudServicioFunerarioController {
     })
     solicitudServicioFunerario: Omit<SolicitudServicioFunerario, 'id'>,
   ): Promise<SolicitudServicioFunerario> {
+    // Generar un código único para la sala de chat
+    const codigoSalaChat = this.servicioSeguridad.crearTextoAleatorio(6)
+
+    //Enviar codigoUnico por notificacion sms o email
+    const cliente = await this.clienteRepository.findById(solicitudServicioFunerario.clienteId);
+
+    //Verificar que el fallecido no sea el Cliente principal
+    const idbene = solicitudServicioFunerario.idBeneficiario
+
+    let datos = {
+      correoDestino: cliente.correo,
+      nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
+      contenidoCorreo: solicitudServicioFunerario,  // **¡falta agregar que datos vamos a mostrar!**
+      asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+    };
+
+    let datos2 = {
+      correoDestino: cliente.correo,
+      nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
+      contenidoCorreo: codigoSalaChat,
+      asuntoCorreo: ConfiguracionNotificaciones.CodigoSalaChat,
+    };
+
+    let url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
+    let url2 = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
+    this.servicioNotificaciones.EnviarNotificacion(datos, url);
+    this.servicioNotificaciones.EnviarNotificacion(datos2, url2);
     return this.solicitudServicioFunerarioRepository.create(solicitudServicioFunerario);
   }
 
@@ -152,44 +185,5 @@ export class SolicitudServicioFunerarioController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.solicitudServicioFunerarioRepository.deleteById(id);
-  }
-
-  @post('/solicitud-servicios', {
-    responses: {
-      '200': {
-        description: 'SolicitudServicio model instance',
-        content: {'application/json': {schema: getModelSchemaRef(SolicitudServicioFunerario)}},
-      },
-    },
-  })
-  async create5(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(SolicitudServicioFunerario, {
-            title: 'NewSolicitudServicio',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
-    solicitudServicio: Omit<SolicitudServicioFunerario, 'id'>,
-  ): Promise<SolicitudServicioFunerario> {
-    // Crear la solicitud de servicio
-    const newSolicitudServicio = await this.solicitudServicioFunerarioRepository.create(solicitudServicio);
-
-    // Generar un código único para la sala de chat
-    const codigoSalaChat = this.servicioSeguridad.crearTextoAleatorio(6)
-
-    // Crear la sala de chat asociada
-    const nuevaSalaChat = await this.salaChatRepository.create({
-      codigoUnico: codigoSalaChat,
-      solicitudServicioFunerarioId: newSolicitudServicio.id,
-    });
-
-    // Actualizar la solicitud de servicio con la sala de chat asociada
-    newSolicitudServicio.salaChats = [nuevaSalaChat]; // Assign the nuevaSalaChat object directly
-    await this.solicitudServicioFunerarioRepository.update(newSolicitudServicio);
-    return newSolicitudServicio;
   }
 }

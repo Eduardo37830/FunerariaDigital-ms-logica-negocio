@@ -18,19 +18,17 @@ export namespace ConfiguracionSeguridad {
   export const menuSalaChatId = "";
   export const menuServicioPlanId = "";
   export const menuServicioId = "";
+  export const SolicitudServicioFunerarioId = "66216d0c415cd3feff84ba03";
 
 
 
-  //
+  // Enlazamiento a ms-seguridad y CRUD
   export const listarAccion = "listar";
   export const guardarAccion = "guardar";
   export const editarAccion = "editar";
   export const eliminarAccion = "eliminar";
   export const descargarAccion = "descargar";
   export const enlaceMicroservicioSeguridad = "http://localhost:3000/";
-
-
-
 
   // Enlaczamiento a la base de datos de ms-logica-negocio en MySQL
   export const mysqlName = process.env.DB_NAME;
