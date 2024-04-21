@@ -58,9 +58,8 @@ export class Conductor extends Entity {
 
   @property({
     type: 'string',
-    required: true,
   })
-  responsabilidades: string;
+  foto?: string;
 
   @property({
     type: 'string',
@@ -73,6 +72,12 @@ export class Conductor extends Entity {
     required: true,
   })
   direccion: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  responsabilidades?: string;
 
   @hasMany(() => ServicioFunerario)
   servicioFunerarios: ServicioFunerario[];
