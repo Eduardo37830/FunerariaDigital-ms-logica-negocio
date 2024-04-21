@@ -42,7 +42,7 @@ export class SolicitudServicioFunerario extends Entity {
   tipoServicio: string;
 
   @property({
-    type: 'string',
+    type: 'boolean',
     required: true,
   })
   estadoAceptado: boolean;
