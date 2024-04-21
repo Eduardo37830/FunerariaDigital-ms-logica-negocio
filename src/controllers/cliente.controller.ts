@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,24 +8,33 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  HttpErrors,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
-import {Cliente} from '../models';
-import {ClienteRepository} from '../repositories';
+import {Cliente, GenerarPqrs} from '../models';
+import {AdministradorRepository, ClienteRepository} from '../repositories';
+import {NotificacionesService} from '../services';
+import {SeguridadService} from '../services/seguridad.service';
 
 export class ClienteController {
   constructor(
     @repository(ClienteRepository)
-    public clienteRepository : ClienteRepository,
-  ) {}
+    public clienteRepository: ClienteRepository,
+    @service(NotificacionesService)
+    public servicioNotificaciones: NotificacionesService,
+    @repository(AdministradorRepository)
+    public administradorRepository: AdministradorRepository,
+    @repository(SeguridadService)
+    public seguridadService: SeguridadService,
+  ) { }
 
   @post('/cliente')
   @response(200, {
@@ -146,5 +156,37 @@ export class ClienteController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.clienteRepository.deleteById(id);
+  }
+
+  @post('generar-pqrs')
+  @response(200, {
+    description: 'Cliente model count',
+    content: {'application/json': {schema: CountSchema}},
+  })
+  async GenerarPQRS(
+    @requestBody(
+      {
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(GenerarPqrs)
+          }
+        }
+      }
+    )
+    credenciales: GenerarPqrs
+  ): Promise<object> {
+    let cliente = await this.seguridadService.identificarCliente(credenciales)
+    // Envio de correo electronico al Administrador con el PQRSJ
+    /*if (cliente) {
+      let datos = {
+        correoDestino: admin.correo,
+        nombreDestino: admin.primerNombre + " " + admin.segundoNombre,
+        contenidoCorreo: "PQRS: " + cliente.id + " " + cliente.correo + " " + cliente.celular,
+        asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+      };
+    }
+    let url = ConfiguracionNotificaciones.urlNotificaciones2fa;
+    this.servicioNotificaciones.EnviarNotificacion(datos, url);*/
+    return new HttpErrors[401]("Credenciales incorrectas.");
   }
 }

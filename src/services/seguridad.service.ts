@@ -1,8 +1,7 @@
 import { /* inject, */ BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {SalaChat} from '../models';
-import {Credenciales} from '../models/credenciales.model';
-import {SalaChatRepository} from '../repositories';
+import {Cliente, GenerarPqrs} from '../models';
+import {ClienteRepository, SalaChatRepository} from '../repositories';
 const generator = require('generate-password');
 const MD5 = require("crypto-js/md5");
 const jwt = require('jsonwebtoken');
@@ -11,7 +10,9 @@ const jwt = require('jsonwebtoken');
 export class SeguridadService {
   constructor(
     @repository(SalaChatRepository)
-    public repositorioSalaChat: SalaChatRepository
+    public repositorioSalaChat: SalaChatRepository,
+    @repository(ClienteRepository)
+    public repositoryCliente: ClienteRepository,
   ) {
 
   }
@@ -29,18 +30,19 @@ export class SeguridadService {
   }
 
   /**
-   * Se busca un usuario por sus credenciales de acceso
-   * @param credenciales credenciales del usuario
-   * @returns usuario encontrado o null
+   * Se busca un Cliente por sus credenciales de acceso
+   * @param credenciales credenciales del Cliente
+   * @returns Cliente encontrado o null
    */
-  async identificarSolicitud(credenciales: Credenciales): Promise<SalaChat | null> {
-    let salaChat = await this.repositorioSalaChat.findOne({
+  async identificarCliente(credenciales: GenerarPqrs): Promise<Cliente | null> {
+    let Cliente = await this.repositoryCliente.findOne({
       where: {
-        id: credenciales.id,
+        correo: credenciales.correo,
+        celular: credenciales.celular
       }
     });
-    console.log(salaChat)
-    return salaChat as SalaChat
+    console.log(Cliente)
+    return Cliente as Cliente;
   }
 
   /**validarCodigoSalaChat*/

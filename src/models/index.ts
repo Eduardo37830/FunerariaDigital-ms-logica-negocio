@@ -18,3 +18,4 @@ export * from './servicio-funerario.model';
 export * from './solicitud-servicio-funerario.model';
 
 export * from './comentario.model';
+export * from './generar-pqrs.model';
