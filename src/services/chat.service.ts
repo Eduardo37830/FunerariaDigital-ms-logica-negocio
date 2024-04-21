@@ -7,7 +7,7 @@ export class ChatService {
 
   constructor() {}
 
-  async enviarCodigoUnico(codigo: string): Promise<void> {
+  async enviarCodigoUnico(codigo: string, llave: string): Promise<void> {
     this.socket = io("http://localhost:3010", {
       // Opciones adicionales si es necesario, como reintentos, timeout, etc.
     });
@@ -15,7 +15,7 @@ export class ChatService {
     this.socket.on("connect", () => {
       console.log("Conectado al servidor de chat.");
       // Enviar el código único para crear una sala de chat
-      this.socket?.emit("crearSala", codigo);
+      this.socket?.emit("crearSala", codigo, llave);
       // Desconectar después de enviar el código
       this.desconectar();
     });
