@@ -5,7 +5,6 @@ export * from './cliente-plan.repository';
 export * from './cliente.repository';
 export * from './conductor.repository';
 export * from './departamento.repository';
-export * from './estado-beneficiario.repository';
 export * from './estado-servicio.repository';
 export * from './plan.repository';
 export * from './sala-chat.repository';
@@ -17,3 +16,4 @@ export * from './servicio.repository';
 export * from './solicitud-servicio-funerario.repository';
 
 export * from './comentario.repository';
+

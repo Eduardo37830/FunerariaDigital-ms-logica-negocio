@@ -12,10 +12,10 @@ export * from './administrador.model';
 export * from './beneficiario.model';
 export * from './cliente-plan.model';
 export * from './conductor.model';
-export * from './estado-beneficiario.model';
 export * from './estado-servicio.model';
 export * from './servicio-funerario.model';
 export * from './solicitud-servicio-funerario.model';
 
 export * from './comentario.model';
 export * from './generar-pqrs.model';
+

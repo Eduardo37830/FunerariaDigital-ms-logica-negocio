@@ -1,22 +1,16 @@
-import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
 import {Cliente} from './cliente.model';
-import {EstadoBeneficiario} from './estado-beneficiario.model';
+import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
 
 @model({
   settings: {
     foreignKeys: {
-      fk_estadoBeneficiarioId: {
-        name: 'fk_estadoBeneficiarioId',
-        entity: 'EstadoBeneficiario',
-        entityKey: 'id',
-        foreignKey: 'estadoBeneficiarioId',
-      },
       fk_clienteId: {
         name: 'fk_clienteId',
         entity: 'Cliente',
         entityKey: 'id',
         foreignKey: 'clienteId',
-      },
+      }
     },
   },
 })
@@ -52,14 +46,15 @@ export class Beneficiario extends Entity {
 
   @property({
     type: 'string',
-  })
-  documento?: string;
-
-  @property({
-    type: 'date',
     required: true,
   })
-  fechaRegistro: string;
+  correo: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  celular: string;
 
   @property({
     type: 'string',
@@ -78,11 +73,23 @@ export class Beneficiario extends Entity {
   })
   direccion: string;
 
-  @belongsTo(() => EstadoBeneficiario)
-  estadoBeneficiarioId: number;
+  @property({
+    type: 'date',
+    required: true,
+  })
+  fechaRegistro: string;
+
+  @property({
+    type: 'boolean',
+    required: true,
+  })
+  activo: boolean;
 
   @belongsTo(() => Cliente)
   clienteId: number;
+
+  @hasMany(() => SolicitudServicioFunerario)
+  solicitudServicioFunerarios: SolicitudServicioFunerario[];
 
   constructor(data?: Partial<Beneficiario>) {
     super(data);
