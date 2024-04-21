@@ -37,6 +37,11 @@ export class SalaChat extends Entity {
   })
   codigoUnico: string;
 
+  @property({
+    type: 'string',
+  })
+  llaveMaestra: string;
+
   @belongsTo(() => SolicitudServicioFunerario)
   solicitudServicioFunerarioId: number;
 
