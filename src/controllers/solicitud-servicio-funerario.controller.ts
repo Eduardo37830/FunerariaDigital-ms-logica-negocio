@@ -18,11 +18,13 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionNotificaciones} from '../config/notificaciones.config';
 import {SolicitudServicioFunerario} from '../models';
-import {
+import {ClienteRepository,
   SalaChatRepository,
   SolicitudServicioFunerarioRepository,
 } from '../repositories';
+import {NotificacionesService} from '../services';
 import {ChatService} from '../services/chat.service';
 import {SeguridadService} from '../services/seguridad.service';
 
@@ -34,6 +36,10 @@ export class SolicitudServicioFunerarioController {
     public servicioSeguridad: SeguridadService,
     @repository(SalaChatRepository)
     public salaChatRepository: SalaChatRepository,
+    @repository(ClienteRepository)
+    public clienteRepository: ClienteRepository,
+    @service(NotificacionesService)
+    public servicioNotificaciones: NotificacionesService,
     @service(ChatService)
     public chatService: ChatService,
   ) {}
@@ -60,9 +66,34 @@ export class SolicitudServicioFunerarioController {
     })
     solicitudServicioFunerario: Omit<SolicitudServicioFunerario, 'id'>,
   ): Promise<SolicitudServicioFunerario> {
-    return this.solicitudServicioFunerarioRepository.create(
-      solicitudServicioFunerario,
-    );
+    // Generar un código único para la sala de chat
+    const codigoSalaChat = this.servicioSeguridad.crearTextoAleatorio(6)
+
+    //Enviar codigoUnico por notificacion sms o email
+    const cliente = await this.clienteRepository.findById(solicitudServicioFunerario.clienteId);
+
+    //Verificar que el fallecido no sea el Cliente principal
+    const idbene = solicitudServicioFunerario.idBeneficiario
+
+    let datos = {
+      correoDestino: cliente.correo,
+      nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
+      contenidoCorreo: solicitudServicioFunerario,  // **¡falta agregar que datos vamos a mostrar!**
+      asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+    };
+
+    let datos2 = {
+      correoDestino: cliente.correo,
+      nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
+      contenidoCorreo: codigoSalaChat,
+      asuntoCorreo: ConfiguracionNotificaciones.CodigoSalaChat,
+    };
+
+    let url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
+    let url2 = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
+    this.servicioNotificaciones.EnviarNotificacion(datos, url);
+    this.servicioNotificaciones.EnviarNotificacion(datos2, url2);
+    return this.solicitudServicioFunerarioRepository.create(solicitudServicioFunerario);
   }
 
   @get('/solicitud-servicio-funerario/count')

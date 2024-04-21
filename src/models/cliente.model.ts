@@ -1,7 +1,7 @@
-import {Model, model, property, hasMany, Entity} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Beneficiario} from './beneficiario.model';
-import {Plan} from './plan.model';
 import {ClientePlan} from './cliente-plan.model';
+import {Plan} from './plan.model';
 import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
 
 @model()
@@ -49,15 +49,20 @@ export class Cliente extends Entity {
 
   @property({
     type: 'string',
+  })
+  foto?: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  ciudadResidencia: string;
+
+  @property({
+    type: 'string',
     required: true,
   })
   direccion: string;
-
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  estado: boolean;
 
   @property({
     type: 'date',

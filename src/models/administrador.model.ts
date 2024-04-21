@@ -1,6 +1,6 @@
-import {Entity, model, property, hasOne, hasMany} from '@loopback/repository';
-import {Sede} from './sede.model';
+import {Entity, hasMany, hasOne, model, property} from '@loopback/repository';
 import {Plan} from './plan.model';
+import {Sede} from './sede.model';
 
 @model()
 export class Administrador extends Entity {
@@ -54,12 +54,25 @@ export class Administrador extends Entity {
   @property({
     type: 'string',
   })
-  estado?: string;
+  foto?: string;
 
   @property({
-    type: 'date',
+    type: 'string',
+    required: true,
   })
-  fechaRegistro?: string;
+  ciudadResidencia: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  direccion: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  responsabilidades?: string;
 
   @hasOne(() => Sede)
   sede: Sede;

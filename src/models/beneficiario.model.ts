@@ -61,6 +61,23 @@ export class Beneficiario extends Entity {
   })
   fechaRegistro: string;
 
+  @property({
+    type: 'string',
+  })
+  foto?: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  ciudadResidencia: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  direccion: string;
+
   @belongsTo(() => EstadoBeneficiario)
   estadoBeneficiarioId: number;
 

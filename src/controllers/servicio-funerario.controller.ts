@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,24 +8,36 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
-import {ServicioFunerario} from '../models';
-import {ServicioFunerarioRepository} from '../repositories';
+import {ServicioFunerario, SolicitudServicioFunerario} from '../models';
+import {ClienteRepository, SalaRepository, ServicioFunerarioRepository} from '../repositories';
+import {NotificacionesService} from '../services';
+import {SeguridadService} from '../services/seguridad.service';
 
 export class ServicioFunerarioController {
   constructor(
     @repository(ServicioFunerarioRepository)
-    public servicioFunerarioRepository : ServicioFunerarioRepository,
-  ) {}
+    public servicioFunerarioRepository: ServicioFunerarioRepository,
+    @service(NotificacionesService)
+    public servicioNotificaciones: NotificacionesService,
+    @service(SeguridadService)
+    public servicioSeguridad: SeguridadService,
+    @repository(ClienteRepository)
+    public clienteRepository: ClienteRepository,
+    @repository(SalaRepository)
+    public salaRepository: SalaRepository,
+    @repository(SolicitudServicioFunerario)
+    public solicitudServicioFunerario: SolicitudServicioFunerario,
+  ) { }
 
   @post('/servicio-funerario')
   @response(200, {
@@ -44,6 +57,27 @@ export class ServicioFunerarioController {
     })
     servicioFunerario: Omit<ServicioFunerario, 'id'>,
   ): Promise<ServicioFunerario> {
+    // Generar un código único para la sala de chat
+    const codigoUnicoServicio = this.servicioSeguridad.crearTextoAleatorio(6)
+    //Enviar codigoUnico por notificacion sms o email
+    // Enviar correo tanto al Conductor como al cliente con los datos del servicio generado
+
+    const cliente = await this.clienteRepository.findById(this.solicitudServicioFunerario.clienteId);
+
+    if (this.solicitudServicioFunerario.clienteId == cliente.id) {
+      console.log("Cliente " + cliente.correo)
+
+    }
+
+    /*let datos = {
+      correoDestino: cliente.correo,
+      nombreDestino: servicioFunerario.conductorId,
+      contenidoCorreo: servicioFunerario.fecha + " " + servicioFunerario.salaId + " " + codigoUnicoServicio,  // **¡falta agregar que datos vamos a mostrar: Ciudad, Sede**
+      asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+    };
+
+    let url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
+    this.servicioNotificaciones.EnviarNotificacion(datos, url);*/
     return this.servicioFunerarioRepository.create(servicioFunerario);
   }
 
