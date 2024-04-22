@@ -2,6 +2,7 @@ import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository'
 import {Cliente} from './cliente.model';
 import {SalaChat} from './sala-chat.model';
 import {ServicioFunerario} from './servicio-funerario.model';
+import {Sala} from './sala.model';
 
 @model({
   settings: {
@@ -28,12 +29,6 @@ export class SolicitudServicioFunerario extends Entity {
     required: true,
   })
   fechaSolicitud: Date;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  nombreDifunto: string;
 
   @property({
     type: 'number',
@@ -67,6 +62,9 @@ export class SolicitudServicioFunerario extends Entity {
 
   @hasMany(() => SalaChat)
   salaChats: SalaChat[];
+
+  @belongsTo(() => Sala)
+  salaId: number;
 
   constructor(data?: Partial<SolicitudServicioFunerario>) {
     super(data);

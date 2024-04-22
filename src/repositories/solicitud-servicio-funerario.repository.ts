@@ -5,6 +5,7 @@ import {Cliente, SalaChat, ServicioFunerario, SolicitudServicioFunerario, Solici
 import {ClienteRepository} from './cliente.repository';
 import {ComentarioRepository} from './comentario.repository';
 import {SalaChatRepository} from './sala-chat.repository';
+import {SalaRepository} from './sala.repository';
 import {ServicioFunerarioRepository} from './servicio-funerario.repository';
 
 export class SolicitudServicioFunerarioRepository extends DefaultCrudRepository<
@@ -20,7 +21,7 @@ export class SolicitudServicioFunerarioRepository extends DefaultCrudRepository<
   public readonly salaChats: HasManyRepositoryFactory<SalaChat, typeof SolicitudServicioFunerario.prototype.id>;
 
   constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('ServicioFunerarioRepository') protected servicioFunerarioRepositoryGetter: Getter<ServicioFunerarioRepository>, @repository.getter('ClienteRepository') protected clienteRepositoryGetter: Getter<ClienteRepository>, @repository.getter('ComentarioRepository') protected comentarioRepositoryGetter: Getter<ComentarioRepository>, @repository.getter('SalaChatRepository') protected salaChatRepositoryGetter: Getter<SalaChatRepository>,
+    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('ServicioFunerarioRepository') protected servicioFunerarioRepositoryGetter: Getter<ServicioFunerarioRepository>, @repository.getter('ClienteRepository') protected clienteRepositoryGetter: Getter<ClienteRepository>, @repository.getter('ComentarioRepository') protected comentarioRepositoryGetter: Getter<ComentarioRepository>, @repository.getter('SalaChatRepository') protected salaChatRepositoryGetter: Getter<SalaChatRepository>, @repository.getter('SalaRepository') protected salaRepositoryGetter: Getter<SalaRepository>,
   ) {
     super(SolicitudServicioFunerario, dataSource);
     this.salaChats = this.createHasManyRepositoryFactoryFor('salaChats', salaChatRepositoryGetter,);

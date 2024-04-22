@@ -26,7 +26,6 @@ export class GenerarPqrs extends Entity {
   })
   pqrs: string;
 
-
   constructor(data?: Partial<GenerarPqrs>) {
     super(data);
   }

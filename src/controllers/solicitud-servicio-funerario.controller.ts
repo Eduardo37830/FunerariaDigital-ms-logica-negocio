@@ -264,18 +264,15 @@ export class SolicitudServicioFunerarioController {
         llaveMaestra: llaveMaestra,
       });
 
-
-
     //Enviar codigoUnico por notificacion sms o email
     let cliente = await this.clienteRepository.findById(solicitudServicio.clienteId);
+
     // Obtener el cliente con sus beneficiarios
     const clienteConBeneficiarios = await this.obtenerClienteConBeneficiarios(solicitudServicio.clienteId);
 
-    // Verificar si el cliente está activo y si el beneficiario está presente y activo
     if (cliente.activo && solicitudServicio.idBeneficiario != cliente.id) {
 
       if (clienteConBeneficiarios) {
-        // Aquí puedes usar el cliente con sus beneficiarios
 
         //console.log('Cliente:', clienteConBeneficiarios);
         //console.log('Beneficiarios:', clienteConBeneficiarios.beneficiarios);
@@ -288,27 +285,18 @@ export class SolicitudServicioFunerarioController {
             const datos = {
               correoDestino: cliente.correo,
               nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
-              contenidoCorreo: solicitudServicio,
+              contenidoCorreo: "Daros solicitud: " + solicitudServicio + "datos del Difunto" + beneficiario + "Codigo sala " + codigoSalaChat + "Llave Maestra " + llaveMaestra,
               asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
             };
 
-            //Enviar datos de salaChat
-            const datos2 = {
-              correoDestino: cliente.correo,
-              nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
-              contenidoCorreo: codigoSalaChat,
-              asuntoCorreo: ConfiguracionNotificaciones.CodigoSalaChat,
-            };
-
-            const url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
-            const url2 = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
-
-            //this.servicioNotificaciones.EnviarNotificacion(datos, url);
-            //this.servicioNotificaciones.EnviarNotificacion(datos2, url2);
             beneficiario.activo = false;
             solicitudServicio.estadoAceptado == true;
+
+            const url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
+            //this.servicioNotificaciones.EnviarNotificacion(datos, url);
+            await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
           } else {
-            throw new HttpErrors[401](`Beneficiario no encontrado o este se encuentra inactivo.`);
+            throw new HttpErrors[401](`Beneficiario no corresponde con la solicitud  o este se encuentra inactivo.`);
           }
         }
       } else {
@@ -324,9 +312,10 @@ export class SolicitudServicioFunerarioController {
         // Si el cliente es el fallecido cambiar a Benefciciario y asignar un nuevo cliente
         for (let beneficiario of clienteConBeneficiarios!.beneficiarios) {
           console.log("Beneficiario actual:", beneficiario);
+
           if (beneficiario.activo) {
 
-            await this.clienteRepository.updateById(clienteConBeneficiarios.id, {
+            await this.clienteRepository.updateById(cliente.id, {
               primerNombre: beneficiario.primerNombre,
               segundoNombre: beneficiario.segundoNombre,
               primerApellido: beneficiario.primerApellido,
@@ -340,7 +329,7 @@ export class SolicitudServicioFunerarioController {
               activo: true,
             });
 
-            console.log("Nuevo cliente creado:", cliente);
+            console.log("Nuevo cliente creado:", beneficiario.correo);
 
             // Crear un nuevo beneficiario con los datos del cliente
             await this.beneficiarioRepository.updateById(beneficiario.id, {
@@ -357,18 +346,23 @@ export class SolicitudServicioFunerarioController {
               activo: false,
             });
 
-            console.log("Nuevo Beneficiario creado:" + beneficiario);
+            console.log("Nuevo Beneficiario creado:" + cliente.correo);
 
             // Enviar notificación
             const datos = {
-              correoDestino: cliente.correo,
-              nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
-              contenidoCorreo: solicitudServicio,
+              correoDestino: beneficiario.correo,
+              nombreDestino: beneficiario.primerNombre + " " + beneficiario.segundoNombre,
+              contenidoCorreo: "Datos del difunto" + cliente + "Codigo sala " + codigoSalaChat + "Llave Maestra " + llaveMaestra,
               asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
             };
 
+            beneficiario.activo = false;
+            solicitudServicio.estadoAceptado == true;
+
             const url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
             //this.servicioNotificaciones.EnviarNotificacion(datos, url);
+            await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
+
             break;
           } else {
             throw new HttpErrors.Unauthorized("El beneficiario no se encuentra activo.");
@@ -379,6 +373,5 @@ export class SolicitudServicioFunerarioController {
       throw new HttpErrors[401](`El cliente no cuenta con beneficiarios activos.`);
     }
     return newSolicitudServicio;
-
   }
 }
