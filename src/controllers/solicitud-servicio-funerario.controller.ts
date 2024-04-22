@@ -285,7 +285,7 @@ export class SolicitudServicioFunerarioController {
             const datos = {
               correoDestino: cliente.correo,
               nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
-              contenidoCorreo: "Datos solicitud: " + cliente.id + " " + cliente.ciudadResidencia + " " + cliente.foto + "datos del Difunto" + beneficiario + "Codigo sala " + codigoSalaChat + "Llave Maestra " + llaveMaestra,
+              contenidoCorreo: "Datos solicitud: " + cliente.id + " " + cliente.ciudadResidencia + " " + cliente.foto + "datos del Difunto" + beneficiario.id + "Codigo sala " + codigoSalaChat,
               asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
             };
 
@@ -352,7 +352,7 @@ export class SolicitudServicioFunerarioController {
             const datos = {
               correoDestino: beneficiario.correo,
               nombreDestino: beneficiario.primerNombre + " " + beneficiario.segundoNombre,
-              contenidoCorreo: "Datos solicitud: " + beneficiario.id + " " + beneficiario.ciudadResidencia + " " + beneficiario.foto + "datos del Difunto" + cliente + "Codigo sala " + codigoSalaChat + "Llave Maestra " + llaveMaestra,
+              contenidoCorreo: "Datos solicitud: " + beneficiario.id + " " + beneficiario.ciudadResidencia + " " + beneficiario.foto + "datos del Difunto" + cliente.id + "Codigo sala " + codigoSalaChat,
               asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
               llaveMaestra: llaveMaestra,
             };
