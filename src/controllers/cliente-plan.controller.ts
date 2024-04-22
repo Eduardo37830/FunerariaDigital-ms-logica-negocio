@@ -5,7 +5,7 @@ import {
   repository,
   Where,
 } from '@loopback/repository';
-  import {
+import {
   del,
   get,
   getModelSchemaRef,
@@ -16,12 +16,12 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
+import {ClientePlan, Plan} from '../models';
 import {
-Cliente,
-ClientePlan,
-Plan,
-} from '../models';
-import {ClientePlanRepository, ClienteRepository, PlanRepository} from '../repositories';
+  ClientePlanRepository,
+  ClienteRepository,
+  PlanRepository,
+} from '../repositories';
 
 export class ClientePlanController {
   constructor(
@@ -31,7 +31,7 @@ export class ClientePlanController {
     public planRepository: PlanRepository,
     @repository(ClientePlanRepository)
     public clientePlanRepository: ClientePlanRepository,
-  ) { }
+  ) {}
 
   @get('/clientes/{id}/plans', {
     responses: {
@@ -73,22 +73,33 @@ export class ClientePlanController {
     })
     clientePlanData: Omit<ClientePlan, 'id'>,
   ): Promise<ClientePlan> {
-    // Verifica si el cliente existe
-    const clienteExists = await this.clienteRepository.exists(clientePlanData.clienteId);
-    if (!clienteExists) {
-      throw new HttpErrors.NotFound(`Cliente con ID ${clientePlanData.clienteId} no encontrado`);
-    }
+    // Verifica si el cliente existe y está activo
+    const cliente = await this.clienteRepository.findById(
+      clientePlanData.clienteId,
+    );
+    console.log(cliente.activo);
 
-    // Verifica si el plan existe
-    const planExists = await this.planRepository.exists(clientePlanData.planId);
-    if (!planExists) {
-      throw new HttpErrors.NotFound(`Plan con ID ${clientePlanData.planId} no encontrado`);
+    if (!cliente || !cliente.activo) {
+      throw new HttpErrors.NotFound(
+        `Cliente con ID ${clientePlanData.clienteId} no encontrado o inactivo`,
+      );
     }
+    {
+      // Verifica si el plan existe
+      const planExists = await this.planRepository.exists(
+        clientePlanData.planId,
+      );
+      if (!planExists) {
+        throw new HttpErrors.NotFound(
+          `Plan con ID ${clientePlanData.planId} no encontrado`,
+        );
+      }
 
-    // Crea la nueva asociación ClientePlan
-    console.log("PLAN AQUIRIDO!!!");
-    
-    return this.clientePlanRepository.create(clientePlanData);
+      // Crea la nueva asociación ClientePlan
+      console.log('PLAN AQUIRIDO!!!');
+
+      return this.clientePlanRepository.create(clientePlanData);
+    }
   }
 
   @patch('/clientes/{id}/plans', {
