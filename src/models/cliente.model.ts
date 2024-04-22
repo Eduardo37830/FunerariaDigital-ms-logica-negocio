@@ -68,7 +68,13 @@ export class Cliente extends Entity {
     type: 'date',
     required: true,
   })
-  fechaRegistro: string;
+  fechaRegistro: Date;
+
+  @property({
+    type: 'boolean',
+    required: true,
+  })
+  activo: boolean;
 
   @hasMany(() => Beneficiario)
   beneficiarios: Beneficiario[];

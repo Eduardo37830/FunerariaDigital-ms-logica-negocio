@@ -11,15 +11,14 @@ import {
   del,
   get,
   getModelSchemaRef,
-  HttpErrors,
   param,
   patch,
   post,
   put,
   requestBody,
-  response,
+  response
 } from '@loopback/rest';
-import {Cliente, GenerarPqrs} from '../models';
+import {Cliente} from '../models';
 import {AdministradorRepository, ClienteRepository} from '../repositories';
 import {NotificacionesService} from '../services';
 import {SeguridadService} from '../services/seguridad.service';
@@ -156,37 +155,5 @@ export class ClienteController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.clienteRepository.deleteById(id);
-  }
-
-  @post('generar-pqrs')
-  @response(200, {
-    description: 'Cliente model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async GenerarPQRS(
-    @requestBody(
-      {
-        content: {
-          'application/json': {
-            schema: getModelSchemaRef(GenerarPqrs)
-          }
-        }
-      }
-    )
-    credenciales: GenerarPqrs
-  ): Promise<object> {
-    let cliente = await this.seguridadService.identificarCliente(credenciales)
-    // Envio de correo electronico al Administrador con el PQRSJ
-    /*if (cliente) {
-      let datos = {
-        correoDestino: admin.correo,
-        nombreDestino: admin.primerNombre + " " + admin.segundoNombre,
-        contenidoCorreo: "PQRS: " + cliente.id + " " + cliente.correo + " " + cliente.celular,
-        asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
-      };
-    }
-    let url = ConfiguracionNotificaciones.urlNotificaciones2fa;
-    this.servicioNotificaciones.EnviarNotificacion(datos, url);*/
-    return new HttpErrors[401]("Credenciales incorrectas.");
   }
 }

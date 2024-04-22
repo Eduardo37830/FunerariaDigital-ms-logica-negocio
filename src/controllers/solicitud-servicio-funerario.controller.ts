@@ -5,7 +5,7 @@ import {
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
   del,
@@ -20,7 +20,7 @@ import {
   response
 } from '@loopback/rest';
 import {ConfiguracionNotificaciones} from '../config/notificaciones.config';
-import {SolicitudServicioFunerario} from '../models';
+import {Cliente, SolicitudServicioFunerario} from '../models';
 import {
   BeneficiarioRepository,
   ClienteRepository,
@@ -48,6 +48,31 @@ export class SolicitudServicioFunerarioController {
     @service(ChatService)
     public chatService: ChatService,
   ) { }
+
+  /**
+   *
+   * @param idCliente
+   * @returns
+   */
+  async obtenerClienteConBeneficiarios(idCliente: number): Promise<Cliente | null> {
+    // Obtener el cliente por su ID
+    const cliente = await this.clienteRepository.findById(idCliente);
+    if (!cliente) {
+      return null; // Retornar null si no se encuentra el cliente
+    }
+
+    // Cargar manualmente los beneficiarios del cliente
+    const beneficiarios = await this.beneficiarioRepository.find({
+      where: {clienteId: idCliente},
+    });
+
+    // Asignar los beneficiarios al cliente
+    cliente.beneficiarios = beneficiarios;
+
+    return cliente;
+  }
+
+
 
   @post('/solicitud-servicio-funerario')
   @response(200, {
@@ -239,44 +264,69 @@ export class SolicitudServicioFunerarioController {
         llaveMaestra: llaveMaestra,
       });
 
-    // Enviar el código único al servidor de chat
+
 
     //Enviar codigoUnico por notificacion sms o email
     let cliente = await this.clienteRepository.findById(solicitudServicio.clienteId);
+    // Obtener el cliente con sus beneficiarios
+    const clienteConBeneficiarios = await this.obtenerClienteConBeneficiarios(solicitudServicio.clienteId);
 
-    //Verificar que el fallecido no sea el Cliente principal
-    let beneficiario = await this.beneficiarioRepository.findById(solicitudServicio.beneficiarioId);
+    // Verificar si el cliente está activo y si el beneficiario está presente y activo
+    if (cliente.activo && solicitudServicio.idBeneficiario != cliente.id) {
 
-    if (!beneficiario) {
+      if (clienteConBeneficiarios) {
+        // Aquí puedes usar el cliente con sus beneficiarios
 
-      if (cliente.correo == solicitudServicio.correoDifunto) {
-        // Crear un nuevo beneficiario con los datos del cliente
-        beneficiario = await this.beneficiarioRepository.create({
-          primerNombre: cliente.primerNombre,
-          segundoNombre: cliente.segundoNombre,
-          primerApellido: cliente.primerApellido,
-          segundoApellido: cliente.segundoApellido,
-          correo: cliente.correo,
-          celular: cliente.celular,
-          foto: cliente.foto,
-          ciudadResidencia: cliente.ciudadResidencia,
-          direccion: cliente.direccion,
-          fechaRegistro: cliente.fechaRegistro,
-          activo: false,
-        });
+        //console.log('Cliente:', clienteConBeneficiarios);
+        //console.log('Beneficiarios:', clienteConBeneficiarios.beneficiarios);
 
-        // Crear un nuevo cliente utilizando los datos del beneficiario
+        for (let beneficiario of clienteConBeneficiarios!.beneficiarios) {
+          if (beneficiario.id === solicitudServicio.idBeneficiario && beneficiario.activo) {
+            console.log("si existe un beneficirio y esta activo")
 
-        // Inicializar una variable para almacenar el beneficiario activo
-        let beneficiarioActivo = null;
+            // Enviar notificaciones y código único del servicio de se solicito
+            const datos = {
+              correoDestino: cliente.correo,
+              nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
+              contenidoCorreo: solicitudServicio,
+              asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+            };
 
-        // Iterar sobre los beneficiarios del cliente
-        for (const beneficiario of cliente.beneficiarios) {
-          // Verificar si el beneficiario está activo
+            //Enviar datos de salaChat
+            const datos2 = {
+              correoDestino: cliente.correo,
+              nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
+              contenidoCorreo: codigoSalaChat,
+              asuntoCorreo: ConfiguracionNotificaciones.CodigoSalaChat,
+            };
+
+            const url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
+            const url2 = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
+
+            //this.servicioNotificaciones.EnviarNotificacion(datos, url);
+            //this.servicioNotificaciones.EnviarNotificacion(datos2, url2);
+            beneficiario.activo = false;
+            solicitudServicio.estadoAceptado == true;
+          } else {
+            throw new HttpErrors[401](`Beneficiario no encontrado o este se encuentra inactivo.`);
+          }
+        }
+      } else {
+        throw new HttpErrors[401](`Beneficiario no encontrado o este se encuentra inactivo.`);
+      }
+    }
+    if (cliente.activo == false) {
+      throw new HttpErrors[401](`Cliente inactivo.`);
+    }
+
+    if (cliente.id == solicitudServicio.idBeneficiario) {
+      if (clienteConBeneficiarios) {
+        // Si el cliente es el fallecido cambiar a Benefciciario y asignar un nuevo cliente
+        for (let beneficiario of clienteConBeneficiarios!.beneficiarios) {
+          console.log("Beneficiario actual:", beneficiario);
           if (beneficiario.activo) {
-            // Asignar el beneficiario activo y salir del bucle
-            beneficiarioActivo = beneficiario;
-            const nuevoCliente = await this.clienteRepository.create({
+
+            await this.clienteRepository.updateById(clienteConBeneficiarios.id, {
               primerNombre: beneficiario.primerNombre,
               segundoNombre: beneficiario.segundoNombre,
               primerApellido: beneficiario.primerApellido,
@@ -286,60 +336,49 @@ export class SolicitudServicioFunerarioController {
               foto: beneficiario.foto,
               ciudadResidencia: beneficiario.ciudadResidencia,
               direccion: beneficiario.direccion,
-              fechaRegistro: new Date().toISOString(), // Opcional: puedes establecer la fecha actual como fecha de registro del cliente
+              fechaRegistro: new Date(),
+              activo: true,
             });
 
-            let datos = {
-              correoDestino: nuevoCliente.correo,
-              nombreDestino: nuevoCliente.primerNombre + " " + nuevoCliente.segundoNombre,
-              contenidoCorreo: solicitudServicio,  // **¡falta agregar que datos vamos a mostrar!**
+            console.log("Nuevo cliente creado:", cliente);
+
+            // Crear un nuevo beneficiario con los datos del cliente
+            await this.beneficiarioRepository.updateById(beneficiario.id, {
+              primerNombre: cliente!.primerNombre,
+              segundoNombre: cliente!.segundoNombre,
+              primerApellido: cliente!.primerApellido,
+              segundoApellido: cliente!.segundoApellido,
+              correo: cliente!.correo,
+              celular: cliente!.celular,
+              foto: cliente!.foto,
+              ciudadResidencia: cliente!.ciudadResidencia,
+              direccion: cliente!.direccion,
+              fechaRegistro: cliente!.fechaRegistro,
+              activo: false,
+            });
+
+            console.log("Nuevo Beneficiario creado:" + beneficiario);
+
+            // Enviar notificación
+            const datos = {
+              correoDestino: cliente.correo,
+              nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
+              contenidoCorreo: solicitudServicio,
               asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
             };
 
-            let datos2 = {
-              correoDestino: cliente.correo,
-              nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
-              contenidoCorreo: codigoSalaChat,
-              asuntoCorreo: ConfiguracionNotificaciones.CodigoSalaChat,
-            };
-
-            let url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
-            let url2 = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
-            console.log("sala" + cliente.correo + " nombre" + cliente.primerNombre + "Codigo" + codigoSalaChat + " " + llaveMaestra)
+            const url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
             //this.servicioNotificaciones.EnviarNotificacion(datos, url);
-            //this.servicioNotificaciones.EnviarNotificacion(datos2, url2);
             break;
+          } else {
+            throw new HttpErrors.Unauthorized("El beneficiario no se encuentra activo.");
           }
         }
       }
-      throw new HttpErrors.NotFound('El beneficiario no existe.');
-    }
-
-    if (beneficiario.correo == solicitudServicio.correoDifunto) {
-      let datos = {
-        correoDestino: cliente.correo,
-        nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
-        contenidoCorreo: solicitudServicio,  // **¡falta agregar que datos vamos a mostrar!**
-        asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
-      };
-
-      let datos2 = {
-        correoDestino: cliente.correo,
-        nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
-        contenidoCorreo: codigoSalaChat,
-        asuntoCorreo: ConfiguracionNotificaciones.CodigoSalaChat,
-      };
-
-      let url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
-      let url2 = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
-      console.log("sala" + cliente.correo + " nombre" + cliente.primerNombre + "Codigo" + codigoSalaChat + " " + llaveMaestra)
-      //this.servicioNotificaciones.EnviarNotificacion(datos, url);
-      //this.servicioNotificaciones.EnviarNotificacion(datos2, url2);
-      await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
     } else {
-      throw new HttpErrors.NotFound('El beneficiario no existe.');
-      //throw new HttpErrors[401]("El id no corresponde con ninguno de los Beneficirios del cliente.");
+      throw new HttpErrors[401](`El cliente no cuenta con beneficiarios activos.`);
     }
     return newSolicitudServicio;
+
   }
 }
