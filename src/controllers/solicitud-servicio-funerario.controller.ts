@@ -285,26 +285,28 @@ export class SolicitudServicioFunerarioController {
             console.log("si existe un beneficirio y esta activo")
 
             // Enviar notificaciones y código único del servicio de se solicito
-            const datos = {
+/*             const datos = {
               correoDestino: cliente.correo,
               nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
               contenidoCorreo: solicitudServicio,
               asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
-            };
+            }; */
 
             //Enviar datos de salaChat
             const datos2 = {
               correoDestino: cliente.correo,
               nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
               contenidoCorreo: codigoSalaChat,
+              llaveMaestra: llaveMaestra,
               asuntoCorreo: ConfiguracionNotificaciones.CodigoSalaChat,
             };
 
             const url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
             const url2 = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
 
+
             //this.servicioNotificaciones.EnviarNotificacion(datos, url);
-            //this.servicioNotificaciones.EnviarNotificacion(datos2, url2);
+            this.servicioNotificaciones.EnviarNotificacion(datos2, url2);
             beneficiario.activo = false;
             solicitudServicio.estadoAceptado == true;
           } else {
