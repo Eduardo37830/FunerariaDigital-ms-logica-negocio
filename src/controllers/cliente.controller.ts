@@ -1,4 +1,4 @@
-import {service} from '@loopback/core';
+import {inject, service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -18,10 +18,11 @@ import {
   requestBody,
   response
 } from '@loopback/rest';
-import {Cliente} from '../models';
+import {Cliente, SolicitudServicioFunerario} from '../models';
 import {AdministradorRepository, ClienteRepository} from '../repositories';
 import {NotificacionesService} from '../services';
 import {SeguridadService} from '../services/seguridad.service';
+import {ClienteSolicitudServicioFunerarioController} from './cliente-solicitud-servicio-funerario.controller';
 
 export class ClienteController {
   constructor(
@@ -31,8 +32,10 @@ export class ClienteController {
     public servicioNotificaciones: NotificacionesService,
     @repository(AdministradorRepository)
     public administradorRepository: AdministradorRepository,
-    @repository(SeguridadService)
+    @service(SeguridadService)
     public seguridadService: SeguridadService,
+    @inject('controllers.ClienteSolicitudServicioFunerarioController')
+    public clienteSolicitudServicioController: ClienteSolicitudServicioFunerarioController, // Inyecta el controlador de cliente-solicitud-servicio-funerario
   ) { }
 
   @post('/cliente')
@@ -118,6 +121,13 @@ export class ClienteController {
     @param.filter(Cliente, {exclude: 'where'}) filter?: FilterExcludingWhere<Cliente>
   ): Promise<Cliente> {
     return this.clienteRepository.findById(id, filter);
+  }
+
+  @get('/listarSolicitudes/{id}')
+  async listarSolicitudesServicioFunerario(
+    @param.path.number('id') clienteId: typeof Cliente.prototype.id,
+  ): Promise<SolicitudServicioFunerario[]> {
+    return this.clienteSolicitudServicioController.find(clienteId!); // Llama al método find del controlador de cliente-solicitud-servicio-funerario
   }
 
   @patch('/cliente/{id}')

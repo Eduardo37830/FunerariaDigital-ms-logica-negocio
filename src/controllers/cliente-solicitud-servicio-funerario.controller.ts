@@ -19,11 +19,12 @@ import {
   Cliente,
   SolicitudServicioFunerario,
 } from '../models';
-import {ClienteRepository} from '../repositories';
+import {ClienteRepository, SolicitudServicioFunerarioRepository} from '../repositories';
 
 export class ClienteSolicitudServicioFunerarioController {
   constructor(
     @repository(ClienteRepository) protected clienteRepository: ClienteRepository,
+    @repository(SolicitudServicioFunerarioRepository) protected solicitudServicioFunerarioRepository: SolicitudServicioFunerarioRepository,
   ) { }
 
   @get('/clientes/{id}/solicitud-servicio-funerarios', {
@@ -43,6 +44,24 @@ export class ClienteSolicitudServicioFunerarioController {
     @param.query.object('filter') filter?: Filter<SolicitudServicioFunerario>,
   ): Promise<SolicitudServicioFunerario[]> {
     return this.clienteRepository.solicitudServicioFunerarios(id).find(filter);
+  }
+
+  @get('/listar-solicitudes', {
+    responses: {
+      '200': {
+        description: 'Array of all SolicitudServicioFunerario',
+        content: {
+          'application/json': {
+            schema: {type: 'array', items: getModelSchemaRef(SolicitudServicioFunerario)},
+          },
+        },
+      },
+    },
+  })
+  async listarTodasSolicitudes(
+    @param.query.object('filter') filter?: Filter<SolicitudServicioFunerario>,
+  ): Promise<SolicitudServicioFunerario[]> {
+    return this.solicitudServicioFunerarioRepository.find(filter);
   }
 
   @post('/clientes/{id}/solicitud-servicio-funerarios', {
