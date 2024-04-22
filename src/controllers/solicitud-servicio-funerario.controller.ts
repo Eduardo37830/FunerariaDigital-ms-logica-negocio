@@ -352,8 +352,9 @@ export class SolicitudServicioFunerarioController {
             const datos = {
               correoDestino: beneficiario.correo,
               nombreDestino: beneficiario.primerNombre + " " + beneficiario.segundoNombre,
-              contenidoCorreo: "Datos del difunto" + cliente + "Codigo sala " + codigoSalaChat + "Llave Maestra " + llaveMaestra,
+              contenidoCorreo: "Datos del difunto" + cliente + "Codigo sala " + codigoSalaChat,
               asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+              llaveMaestra: llaveMaestra,
             };
 
             beneficiario.activo = false;
@@ -361,6 +362,7 @@ export class SolicitudServicioFunerarioController {
 
             const url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
             //this.servicioNotificaciones.EnviarNotificacion(datos, url);
+
             await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
 
             break;
