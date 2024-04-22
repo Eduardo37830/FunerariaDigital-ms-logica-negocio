@@ -10,6 +10,7 @@ import {
   get,
   getModelSchemaRef,
   getWhereSchemaFor,
+  HttpErrors,
   param,
   patch,
   post,
@@ -20,11 +21,16 @@ Cliente,
 ClientePlan,
 Plan,
 } from '../models';
-import {ClienteRepository} from '../repositories';
+import {ClientePlanRepository, ClienteRepository, PlanRepository} from '../repositories';
 
 export class ClientePlanController {
   constructor(
-    @repository(ClienteRepository) protected clienteRepository: ClienteRepository,
+    @repository(ClienteRepository)
+    public clienteRepository: ClienteRepository,
+    @repository(PlanRepository)
+    public planRepository: PlanRepository,
+    @repository(ClientePlanRepository)
+    public clientePlanRepository: ClientePlanRepository,
   ) { }
 
   @get('/clientes/{id}/plans', {
@@ -46,28 +52,43 @@ export class ClientePlanController {
     return this.clienteRepository.plans(id).find(filter);
   }
 
-  @post('/clientes/{id}/plans', {
+  @post('/adquirir-plan', {
     responses: {
       '200': {
-        description: 'create a Plan model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Plan)}},
+        description: 'ClientePlan model instance',
+        content: {'application/json': {schema: getModelSchemaRef(ClientePlan)}},
       },
     },
   })
-  async create(
-    @param.path.number('id') id: typeof Cliente.prototype.id,
+  async adquirirPlan(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Plan, {
-            title: 'NewPlanInCliente',
+          schema: getModelSchemaRef(ClientePlan, {
+            title: 'NewClientePlan',
             exclude: ['id'],
           }),
         },
       },
-    }) plan: Omit<Plan, 'id'>,
-  ): Promise<Plan> {
-    return this.clienteRepository.plans(id).create(plan);
+    })
+    clientePlanData: Omit<ClientePlan, 'id'>,
+  ): Promise<ClientePlan> {
+    // Verifica si el cliente existe
+    const clienteExists = await this.clienteRepository.exists(clientePlanData.clienteId);
+    if (!clienteExists) {
+      throw new HttpErrors.NotFound(`Cliente con ID ${clientePlanData.clienteId} no encontrado`);
+    }
+
+    // Verifica si el plan existe
+    const planExists = await this.planRepository.exists(clientePlanData.planId);
+    if (!planExists) {
+      throw new HttpErrors.NotFound(`Plan con ID ${clientePlanData.planId} no encontrado`);
+    }
+
+    // Crea la nueva asociación ClientePlan
+    console.log("PLAN AQUIRIDO!!!");
+    
+    return this.clientePlanRepository.create(clientePlanData);
   }
 
   @patch('/clientes/{id}/plans', {
