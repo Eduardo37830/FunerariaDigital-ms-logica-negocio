@@ -285,14 +285,14 @@ export class SolicitudServicioFunerarioController {
             const datos = {
               correoDestino: cliente.correo,
               nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
-              contenidoCorreo: "Daros solicitud: " + solicitudServicio + "datos del Difunto" + beneficiario + "Codigo sala " + codigoSalaChat + "Llave Maestra " + llaveMaestra,
+              contenidoCorreo: "Datos solicitud: " + cliente.id + " " + cliente.ciudadResidencia + " " + cliente.foto + "datos del Difunto" + beneficiario + "Codigo sala " + codigoSalaChat + "Llave Maestra " + llaveMaestra,
               asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
             };
 
             beneficiario.activo = false;
             solicitudServicio.estadoAceptado == true;
 
-            const url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
+            const url = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
             this.servicioNotificaciones.EnviarNotificacion(datos, url);
             await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
           } else {
@@ -352,7 +352,7 @@ export class SolicitudServicioFunerarioController {
             const datos = {
               correoDestino: beneficiario.correo,
               nombreDestino: beneficiario.primerNombre + " " + beneficiario.segundoNombre,
-              contenidoCorreo: "Datos del difunto" + cliente + "Codigo sala " + codigoSalaChat,
+              contenidoCorreo: "Datos solicitud: " + beneficiario.id + " " + beneficiario.ciudadResidencia + " " + beneficiario.foto + "datos del Difunto" + cliente + "Codigo sala " + codigoSalaChat + "Llave Maestra " + llaveMaestra,
               asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
               llaveMaestra: llaveMaestra,
             };
@@ -360,9 +360,8 @@ export class SolicitudServicioFunerarioController {
             beneficiario.activo = false;
             solicitudServicio.estadoAceptado == true;
 
-            const url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
+            const url = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
             this.servicioNotificaciones.EnviarNotificacion(datos, url);
-
             await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
 
             break;
