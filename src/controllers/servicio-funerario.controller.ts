@@ -19,8 +19,8 @@ import {
   response,
 } from '@loopback/rest';
 import {ConfiguracionNotificaciones} from '../config/notificaciones.config';
-import {Sala, ServicioFunerario, SolicitudServicioFunerario} from '../models';
-import {ClienteRepository, ConductorRepository, SalaRepository, ServicioFunerarioRepository} from '../repositories';
+import {Cliente, Sala, ServicioFunerario, SolicitudServicioFunerario} from '../models';
+import {BeneficiarioRepository, ClienteRepository, ConductorRepository, SalaRepository, ServicioFunerarioRepository, SolicitudServicioFunerarioRepository} from '../repositories';
 import {NotificacionesService} from '../services';
 import {SeguridadService} from '../services/seguridad.service';
 
@@ -40,7 +40,34 @@ export class ServicioFunerarioController {
     public solicitudServicioFunerario: SolicitudServicioFunerario,
     @repository(ConductorRepository)
     public conductorRepository: ConductorRepository,
+    @repository(SolicitudServicioFunerario)
+    public solicitudServicioFunerarioRepository: SolicitudServicioFunerarioRepository,
+    @repository(BeneficiarioRepository)
+    public beneficiarioRepository: BeneficiarioRepository,
   ) { }
+
+  /**
+   *
+   * @param idCliente
+   * @returns
+   */
+  async obtenerClienteConBeneficiarios(idCliente: number): Promise<Cliente | null> {
+    // Obtener el cliente por su ID
+    const cliente = await this.clienteRepository.findById(idCliente);
+    if (!cliente) {
+      return null; // Retornar null si no se encuentra el cliente
+    }
+
+    // Cargar manualmente los beneficiarios del cliente
+    const beneficiarios = await this.beneficiarioRepository.find({
+      where: {clienteId: idCliente},
+    });
+
+    // Asignar los beneficiarios al cliente
+    cliente.beneficiarios = beneficiarios;
+
+    return cliente;
+  }
 
   /**
    * Obtiene las salas disponibles según la hora de asignación y salida del servicio funerario.
@@ -100,6 +127,15 @@ export class ServicioFunerarioController {
 
     const cliente = await this.clienteRepository.findById(this.solicitudServicioFunerario.clienteId);
     const conductor = await this.conductorRepository.findById(servicioFunerario.conductorId);
+    const solicitud = await this.solicitudServicioFunerarioRepository.findById(servicioFunerario.solicitudServicioFunerarioId)
+    const clienteConBeneficiarios = await this.obtenerClienteConBeneficiarios(this.solicitudServicioFunerario.clienteId);
+
+    for (let beneficiario of clienteConBeneficiarios!.beneficiarios) {
+      if (solicitud.ubicacionDelCuerpo == beneficiario.celular) {
+        servicioFunerario.traslado = true;
+      }
+    }
+
 
     console.log("Cliente: ", cliente.correo)
     console.log("Conductor: ", conductor.correo)

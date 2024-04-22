@@ -293,7 +293,7 @@ export class SolicitudServicioFunerarioController {
             solicitudServicio.estadoAceptado == true;
 
             const url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
-            //this.servicioNotificaciones.EnviarNotificacion(datos, url);
+            this.servicioNotificaciones.EnviarNotificacion(datos, url);
             await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
           } else {
             throw new HttpErrors[401](`Beneficiario no corresponde con la solicitud  o este se encuentra inactivo.`);
@@ -361,7 +361,7 @@ export class SolicitudServicioFunerarioController {
             solicitudServicio.estadoAceptado == true;
 
             const url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
-            //this.servicioNotificaciones.EnviarNotificacion(datos, url);
+            this.servicioNotificaciones.EnviarNotificacion(datos, url);
 
             await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
 
