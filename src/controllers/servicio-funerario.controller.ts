@@ -19,7 +19,7 @@ import {
   response,
 } from '@loopback/rest';
 import {ConfiguracionNotificaciones} from '../config/notificaciones.config';
-import {Cliente, Sala, ServicioFunerario, SolicitudServicioFunerario} from '../models';
+import {Sala, ServicioFunerario, SolicitudServicioFunerario} from '../models';
 import {BeneficiarioRepository, ClienteRepository, ConductorRepository, SalaRepository, ServicioFunerarioRepository, SolicitudServicioFunerarioRepository} from '../repositories';
 import {NotificacionesService} from '../services';
 import {SeguridadService} from '../services/seguridad.service';
@@ -51,7 +51,7 @@ export class ServicioFunerarioController {
    * @param idCliente
    * @returns
    */
-  async obtenerClienteConBeneficiarios(idCliente: number): Promise<Cliente | null> {
+  /*async obtenerClienteConBeneficiarios(idCliente: number): Promise<Cliente | null> {
     // Obtener el cliente por su ID
     const cliente = await this.clienteRepository.findById(idCliente);
     if (!cliente) {
@@ -67,7 +67,7 @@ export class ServicioFunerarioController {
     cliente.beneficiarios = beneficiarios;
 
     return cliente;
-  }
+  }*/
 
   /**
    * Obtiene las salas disponibles según la hora de asignación y salida del servicio funerario.
@@ -128,14 +128,13 @@ export class ServicioFunerarioController {
     const cliente = await this.clienteRepository.findById(this.solicitudServicioFunerario.clienteId);
     const conductor = await this.conductorRepository.findById(servicioFunerario.conductorId);
     const solicitud = await this.solicitudServicioFunerarioRepository.findById(servicioFunerario.solicitudServicioFunerarioId)
-    const clienteConBeneficiarios = await this.obtenerClienteConBeneficiarios(this.solicitudServicioFunerario.clienteId);
+    //const clienteConBeneficiarios = await this.obtenerClienteConBeneficiarios(this.solicitudServicioFunerario.clienteId);
 
-    for (let beneficiario of clienteConBeneficiarios!.beneficiarios) {
-      if (solicitud.ubicacionDelCuerpo == beneficiario.celular) {
-        servicioFunerario.traslado = true;
-      }
-    }
-
+    //for (let beneficiario of clienteConBeneficiarios!.beneficiarios) {
+    // if (solicitud.ubicacionDelCuerpo == beneficiario.celular) {
+    // servicioFunerario.traslado = true;
+    //}
+    //}
 
     console.log("Cliente: ", cliente.correo)
     console.log("Conductor: ", conductor.correo)
@@ -144,15 +143,14 @@ export class ServicioFunerarioController {
 
       console.log("Salas disponibles: ", salasDisponibles)
 
+      if (salasDisponibles.length == 0) {
+        throw new Error("No hay salas disponibles para el servicio funerario");
+      }
+
       for (let sala of salasDisponibles) {
-
-
-        // Actualizar la sala asignada
-        sala.disponible = false;
-        await this.salaRepository.update(sala);
-
-        // Asignar la sala al servicio funerario
-
+        if (sala.id == servicioFunerario.salas[0].id) {
+          break;
+        }
       }
     }
 

@@ -1,5 +1,5 @@
 import {Getter, inject} from '@loopback/core';
-import {BelongsToAccessor, DefaultCrudRepository, repository} from '@loopback/repository';
+import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
 import {Beneficiario, BeneficiarioRelations, Cliente} from '../models';
 import {ClienteRepository} from './cliente.repository';

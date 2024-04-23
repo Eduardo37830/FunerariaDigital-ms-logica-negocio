@@ -31,7 +31,7 @@ export class ClientePlanController {
     public planRepository: PlanRepository,
     @repository(ClientePlanRepository)
     public clientePlanRepository: ClientePlanRepository,
-  ) {}
+  ) { }
 
   @get('/clientes/{id}/plans', {
     responses: {
@@ -51,7 +51,7 @@ export class ClientePlanController {
   ): Promise<Plan[]> {
     return this.clienteRepository.plans(id).find(filter);
   }
-
+  //@authenticate
   @post('/adquirir-plan', {
     responses: {
       '200': {
@@ -125,6 +125,7 @@ export class ClientePlanController {
     return this.clienteRepository.plans(id).patch(plan, where);
   }
 
+  //@authenticate
   @del('/clientes/{id}/plans', {
     responses: {
       '200': {

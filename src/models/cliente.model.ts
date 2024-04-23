@@ -1,8 +1,8 @@
 import {Entity, hasMany, model, property} from '@loopback/repository';
-import {Beneficiario} from './beneficiario.model';
 import {ClientePlan} from './cliente-plan.model';
 import {Plan} from './plan.model';
 import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
+import {Beneficiario} from './beneficiario.model';
 
 @model()
 export class Cliente extends Entity {
@@ -76,14 +76,14 @@ export class Cliente extends Entity {
   })
   activo: boolean;
 
-  @hasMany(() => Beneficiario)
-  beneficiarios: Beneficiario[];
-
   @hasMany(() => Plan, {through: {model: () => ClientePlan}})
   plans: Plan[];
 
   @hasMany(() => SolicitudServicioFunerario)
   solicitudServicioFunerarios: SolicitudServicioFunerario[];
+
+  @hasMany(() => Beneficiario)
+  beneficiarios: Beneficiario[];
 
   constructor(data?: Partial<Cliente>) {
     super(data);

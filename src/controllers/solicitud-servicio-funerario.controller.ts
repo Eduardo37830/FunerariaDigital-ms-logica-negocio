@@ -287,6 +287,7 @@ export class SolicitudServicioFunerarioController {
               nombreDestino: cliente.primerNombre + " " + cliente.segundoNombre,
               contenidoCorreo: "Datos solicitud: " + cliente.id + " " + cliente.ciudadResidencia + " " + cliente.foto + "datos del Difunto" + beneficiario.id + "Codigo sala " + codigoSalaChat,
               asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+              llaveMaestra: llaveMaestra,
             };
 
             beneficiario.activo = false;
@@ -363,7 +364,6 @@ export class SolicitudServicioFunerarioController {
             const url = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
             this.servicioNotificaciones.EnviarNotificacion(datos, url);
             await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
-
             break;
           } else {
             throw new HttpErrors.Unauthorized("El beneficiario no se encuentra activo.");
