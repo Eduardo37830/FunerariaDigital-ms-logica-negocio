@@ -4,15 +4,15 @@ import {Sede} from './sede.model';
 
 @model({
   settings: {
-    foreingKeys: {
+    foreignKeys: {
       fk_ciudad_departamentoId: {
         name: 'fk_ciudad_departamentoId',
         entity: 'Departamento',
         entityKey: 'id',
         foreignKey: 'departamentoId',
-      }
-    }
-  }
+      },
+    },
+  },
 })
 
 export class Ciudad extends Entity {

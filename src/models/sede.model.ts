@@ -20,7 +20,7 @@ import {Sala} from './sala.model';
         foreignKey: 'administradorId',
       },
     },
-  },
+  }
 })
 export class Sede extends Entity {
   @property({

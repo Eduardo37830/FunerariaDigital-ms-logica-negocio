@@ -2,7 +2,7 @@ import {Entity, model, property} from '@loopback/repository';
 
 @model({
   settings: {
-    foreignKeys: {
+    foreingKeys: {
       fk_clientePlan_clienteId: {
         name: 'fk_clientePlan_clienteId',
         entity: 'Cliente',
@@ -15,8 +15,8 @@ import {Entity, model, property} from '@loopback/repository';
         entityKey: 'id',
         foreignKey: 'planId',
       },
-    },
-  },
+    }
+  }
 })
 export class ClientePlan extends Entity {
   @property({

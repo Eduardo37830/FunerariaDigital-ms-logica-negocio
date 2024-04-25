@@ -1,6 +1,18 @@
-import {Entity, model, property} from '@loopback/repository';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {ServicioFunerario} from './servicio-funerario.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_comentario_servicioFunerarioId: {
+        name: 'fk_comentario_servicioFunerarioId',
+        entity: 'ServicioFunerario',
+        entityKey: 'id',
+        foreignKey: 'servicioFunerarioId',
+      },
+    },
+  }
+})
 export class Comentario extends Entity {
   @property({
     type: 'number',
@@ -26,6 +38,9 @@ export class Comentario extends Entity {
     required: true,
   })
   calificacion: number;
+
+  @belongsTo(() => ServicioFunerario)
+  servicioFunerarioId: number;
 
   constructor(data?: Partial<Comentario>) {
     super(data);
