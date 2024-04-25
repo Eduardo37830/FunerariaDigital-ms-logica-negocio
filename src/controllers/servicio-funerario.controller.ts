@@ -18,7 +18,6 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {ConfiguracionNotificaciones} from '../config/notificaciones.config';
 import {Cliente, Sala, ServicioFunerario, SolicitudServicioFunerario} from '../models';
 import {BeneficiarioRepository, ClienteRepository, ConductorRepository, SalaRepository, ServicioFunerarioRepository, SolicitudServicioFunerarioRepository} from '../repositories';
 import {NotificacionesService} from '../services';
@@ -125,54 +124,54 @@ export class ServicioFunerarioController {
 
     //Enviar codigoUnico por notificacion sms o email - Enviar correo tanto al Conductor como al cliente con los datos del servicio generado
 
-    const conductor = await this.conductorRepository.findById(servicioFunerario.conductorId);
-    const solicitud = await this.solicitudServicioFunerarioRepository.findById(servicioFunerario.solicitudServicioFunerarioId)
-    const beneficiario = await this.beneficiarioRepository.findById(this.solicitudServicioFunerario.beneficiarioId)
-    const cliente = await this.clienteRepository.findById(beneficiario.clienteId)
-
-
-    if (solicitud.ubicacionDelCuerpo == beneficiario.celular) {
-      servicioFunerario.traslado = true;
-    } else servicioFunerario.traslado = true;
-
-
-    console.log("Cliente: ", cliente.correo)
-    console.log("Conductor: ", conductor.correo)
-    if (this.solicitudServicioFunerario.estadoAceptado) {
-      const salasDisponibles = await this.obtenerSalasDisponibles();
-
-      console.log("Salas disponibles: ", salasDisponibles)
-
-      if (salasDisponibles.length == 0) {
-        throw new Error("No hay salas disponibles para el servicio funerario");
-      }
-
-      for (let sala of salasDisponibles) {
-        //if (sala.id == servicioFunerario.salas[0].id) {
-        //servicioFunerario.s
-        //break;
-        //}
-      }
-    }
-
-    // Correo al Cliente
-    let datos = {
-      correoDestino: cliente.correo,
-      nombreDestino: cliente.primerNombre + " " + cliente.primerApellido,
-      contenidoCorreo: "Envio de datos del servicio funerario" + servicioFunerario.fecha + " " + "servicioFunerario.salaId" + " " + codigoUnicoServicio,  // **¡falta agregar que datos vamos a mostrar: Ciudad, Sede**
-      asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
-    };
-
-    // Correo al Conductor
-    let datos2 = {
-      correoDestino: conductor.correo,
-      nombreDestino: conductor.primerNombre + " " + conductor.primerApellido,
-      contenidoCorreo: "Envio de datos del servicio funerario" + servicioFunerario.fecha + " " + "servicioFunerario.salaId" + " " + codigoUnicoServicio,  // **¡falta agregar que datos vamos a mostrar: Ciudad, Sede**
-      asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
-    };
-
-    let url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
-    //this.servicioNotificaciones.EnviarNotificacion(datos, url);
+    /* const conductor = await this.conductorRepository.findById(servicioFunerario.conductorId);
+     const solicitud = await this.solicitudServicioFunerarioRepository.findById(servicioFunerario.solicitudServicioFunerarioId)
+     const beneficiario = await this.beneficiarioRepository.findById(this.solicitudServicioFunerario.beneficiarioId)
+     const cliente = await this.clienteRepository.findById(beneficiario.clienteId)
+ 
+ 
+     if (solicitud.ubicacionDelCuerpo == beneficiario.celular) {
+       servicioFunerario.traslado = true;
+     } else servicioFunerario.traslado = true;
+ 
+ 
+     console.log("Cliente: ", cliente.correo)
+     console.log("Conductor: ", conductor.correo)
+     if (this.solicitudServicioFunerario.estadoAceptado) {
+       const salasDisponibles = await this.obtenerSalasDisponibles();
+ 
+       console.log("Salas disponibles: ", salasDisponibles)
+ 
+       if (salasDisponibles.length == 0) {
+         throw new Error("No hay salas disponibles para el servicio funerario");
+       }
+ 
+       for (let sala of salasDisponibles) {
+         //if (sala.id == servicioFunerario.salas[0].id) {
+         //servicioFunerario.s
+         //break;
+         //}
+       }
+     }
+ 
+     // Correo al Cliente
+     let datos = {
+       correoDestino: cliente.correo,
+       nombreDestino: cliente.primerNombre + " " + cliente.primerApellido,
+       contenidoCorreo: "Envio de datos del servicio funerario" + servicioFunerario.fecha + " " + "servicioFunerario.salaId" + " " + codigoUnicoServicio,  // **¡falta agregar que datos vamos a mostrar: Ciudad, Sede**
+       asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+     };
+ 
+     // Correo al Conductor
+     let datos2 = {
+       correoDestino: conductor.correo,
+       nombreDestino: conductor.primerNombre + " " + conductor.primerApellido,
+       contenidoCorreo: "Envio de datos del servicio funerario" + servicioFunerario.fecha + " " + "servicioFunerario.salaId" + " " + codigoUnicoServicio,  // **¡falta agregar que datos vamos a mostrar: Ciudad, Sede**
+       asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+     };
+ 
+     let url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
+     //this.servicioNotificaciones.EnviarNotificacion(datos, url);*/
     return this.servicioFunerarioRepository.create(servicioFunerario);
   }
 

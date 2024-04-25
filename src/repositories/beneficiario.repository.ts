@@ -1,9 +1,8 @@
 import {Getter, inject} from '@loopback/core';
-import {DefaultCrudRepository, repository, BelongsToAccessor, HasManyRepositoryFactory} from '@loopback/repository';
+import {BelongsToAccessor, DefaultCrudRepository, repository} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {Beneficiario, BeneficiarioRelations, Cliente, SolicitudServicioFunerario} from '../models';
+import {Beneficiario, BeneficiarioRelations, Cliente} from '../models';
 import {ClienteRepository} from './cliente.repository';
-import {SolicitudServicioFunerarioRepository} from './solicitud-servicio-funerario.repository';
 
 export class BeneficiarioRepository extends DefaultCrudRepository<
   Beneficiario,
@@ -13,14 +12,10 @@ export class BeneficiarioRepository extends DefaultCrudRepository<
 
   public readonly cliente: BelongsToAccessor<Cliente, typeof Beneficiario.prototype.id>;
 
-  public readonly solicitudServicioFunerarios: HasManyRepositoryFactory<SolicitudServicioFunerario, typeof Beneficiario.prototype.id>;
-
   constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('ClienteRepository') protected clienteRepositoryGetter: Getter<ClienteRepository>, @repository.getter('SolicitudServicioFunerarioRepository') protected solicitudServicioFunerarioRepositoryGetter: Getter<SolicitudServicioFunerarioRepository>,
+    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('ClienteRepository') protected clienteRepositoryGetter: Getter<ClienteRepository>,
   ) {
     super(Beneficiario, dataSource);
-    this.solicitudServicioFunerarios = this.createHasManyRepositoryFactoryFor('solicitudServicioFunerarios', solicitudServicioFunerarioRepositoryGetter,);
-    this.registerInclusionResolver('solicitudServicioFunerarios', this.solicitudServicioFunerarios.inclusionResolver);
     this.cliente = this.createBelongsToAccessorFor('cliente', clienteRepositoryGetter,);
     this.registerInclusionResolver('cliente', this.cliente.inclusionResolver);
   }

@@ -8,31 +8,31 @@ import {
 } from '@loopback/rest';
 import {
   SolicitudServicioFunerario,
-  Beneficiario,
+  Cliente,
 } from '../models';
 import {SolicitudServicioFunerarioRepository} from '../repositories';
 
-export class SolicitudServicioFunerarioBeneficiarioController {
+export class SolicitudServicioFunerarioClienteController {
   constructor(
     @repository(SolicitudServicioFunerarioRepository)
     public solicitudServicioFunerarioRepository: SolicitudServicioFunerarioRepository,
   ) { }
 
-  @get('/solicitud-servicio-funerarios/{id}/beneficiario', {
+  @get('/solicitud-servicio-funerarios/{id}/cliente', {
     responses: {
       '200': {
-        description: 'Beneficiario belonging to SolicitudServicioFunerario',
+        description: 'Cliente belonging to SolicitudServicioFunerario',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Beneficiario),
+            schema: getModelSchemaRef(Cliente),
           },
         },
       },
     },
   })
-  async getBeneficiario(
+  async getCliente(
     @param.path.number('id') id: typeof SolicitudServicioFunerario.prototype.id,
-  ): Promise<Beneficiario> {
-    return this.solicitudServicioFunerarioRepository.beneficiario(id);
+  ): Promise<Cliente> {
+    return this.solicitudServicioFunerarioRepository.cliente(id);
   }
 }
