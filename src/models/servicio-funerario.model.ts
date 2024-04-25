@@ -1,9 +1,8 @@
-import {belongsTo, Entity, model, property, hasMany} from '@loopback/repository';
-import {Comentario} from './comentario.model';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Conductor} from './conductor.model';
 import {EstadoServicio} from './estado-servicio.model';
-import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
 import {Sala} from './sala.model';
+import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
 
 @model({
   settings: {
@@ -76,11 +75,8 @@ export class ServicioFunerario extends Entity {
   @belongsTo(() => SolicitudServicioFunerario)
   solicitudServicioFunerarioId: number;
 
-  @belongsTo(() => Comentario)
-  comentarioId: number;
-
-  @hasMany(() => Sala)
-  salas: Sala[];
+  @belongsTo(() => Sala)
+  salaId: number;
 
   constructor(data?: Partial<ServicioFunerario>) {
     super(data);

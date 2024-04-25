@@ -1,6 +1,6 @@
-import {Entity, hasMany, model, property, belongsTo} from '@loopback/repository';
-import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
+import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
 import {Cliente} from './cliente.model';
+import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
 
 @model({
   settings: {
@@ -85,11 +85,11 @@ export class Beneficiario extends Entity {
   })
   activo: boolean;
 
-  @hasMany(() => SolicitudServicioFunerario)
-  solicitudServicioFunerarios: SolicitudServicioFunerario[];
-
   @belongsTo(() => Cliente)
   clienteId: number;
+
+  @hasMany(() => SolicitudServicioFunerario)
+  solicitudServicioFunerarios: SolicitudServicioFunerario[];
 
   constructor(data?: Partial<Beneficiario>) {
     super(data);

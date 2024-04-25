@@ -1,8 +1,7 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
+import {inject} from '@loopback/core';
+import {DefaultCrudRepository} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {Comentario, ComentarioRelations, ServicioFunerario} from '../models';
-import {ServicioFunerarioRepository} from './servicio-funerario.repository';
+import {Comentario, ComentarioRelations} from '../models';
 
 export class ComentarioRepository extends DefaultCrudRepository<
   Comentario,
@@ -10,13 +9,9 @@ export class ComentarioRepository extends DefaultCrudRepository<
   ComentarioRelations
 > {
 
-  public readonly servicioFunerarios: HasManyRepositoryFactory<ServicioFunerario, typeof Comentario.prototype.id>;
-
   constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('ServicioFunerarioRepository') protected servicioFunerarioRepositoryGetter: Getter<ServicioFunerarioRepository>,
+    @inject('datasources.mysql') dataSource: MysqlDataSource,
   ) {
     super(Comentario, dataSource);
-    this.servicioFunerarios = this.createHasManyRepositoryFactoryFor('servicioFunerarios', servicioFunerarioRepositoryGetter,);
-    this.registerInclusionResolver('servicioFunerarios', this.servicioFunerarios.inclusionResolver);
   }
 }

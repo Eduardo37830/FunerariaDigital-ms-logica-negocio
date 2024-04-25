@@ -1,11 +1,11 @@
 import {Getter, inject} from '@loopback/core';
 import {DefaultCrudRepository, HasManyRepositoryFactory, HasManyThroughRepositoryFactory, repository} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {Cliente, ClientePlan, ClienteRelations, Plan, SolicitudServicioFunerario, Beneficiario} from '../models';
+import {Beneficiario, Cliente, ClientePlan, ClienteRelations, Plan} from '../models';
+import {BeneficiarioRepository} from './beneficiario.repository';
 import {ClientePlanRepository} from './cliente-plan.repository';
 import {PlanRepository} from './plan.repository';
 import {SolicitudServicioFunerarioRepository} from './solicitud-servicio-funerario.repository';
-import {BeneficiarioRepository} from './beneficiario.repository';
 
 export class ClienteRepository extends DefaultCrudRepository<
   Cliente,
@@ -18,8 +18,6 @@ export class ClienteRepository extends DefaultCrudRepository<
     typeof Cliente.prototype.id
   >;
 
-  public readonly solicitudServicioFunerarios: HasManyRepositoryFactory<SolicitudServicioFunerario, typeof Cliente.prototype.id>;
-
   public readonly beneficiarios: HasManyRepositoryFactory<Beneficiario, typeof Cliente.prototype.id>;
 
   constructor(
@@ -28,8 +26,6 @@ export class ClienteRepository extends DefaultCrudRepository<
     super(Cliente, dataSource);
     this.beneficiarios = this.createHasManyRepositoryFactoryFor('beneficiarios', beneficiarioRepositoryGetter,);
     this.registerInclusionResolver('beneficiarios', this.beneficiarios.inclusionResolver);
-    this.solicitudServicioFunerarios = this.createHasManyRepositoryFactoryFor('solicitudServicioFunerarios', solicitudServicioFunerarioRepositoryGetter,);
-    this.registerInclusionResolver('solicitudServicioFunerarios', this.solicitudServicioFunerarios.inclusionResolver);
     this.plans = this.createHasManyThroughRepositoryFactoryFor('plans', planRepositoryGetter, clientePlanRepositoryGetter,);
     this.registerInclusionResolver('plans', this.plans.inclusionResolver);
   }

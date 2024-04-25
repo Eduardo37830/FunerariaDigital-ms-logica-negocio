@@ -16,21 +16,20 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {
-  Cliente,
+  Beneficiario,
   SolicitudServicioFunerario,
 } from '../models';
-import {ClienteRepository, SolicitudServicioFunerarioRepository} from '../repositories';
+import {BeneficiarioRepository} from '../repositories';
 
-export class ClienteSolicitudServicioFunerarioController {
+export class BeneficiarioSolicitudServicioFunerarioController {
   constructor(
-    @repository(ClienteRepository) protected clienteRepository: ClienteRepository,
-    @repository(SolicitudServicioFunerarioRepository) protected solicitudServicioFunerarioRepository: SolicitudServicioFunerarioRepository,
+    @repository(BeneficiarioRepository) protected beneficiarioRepository: BeneficiarioRepository,
   ) { }
 
-  @get('/clientes/{id}/solicitud-servicio-funerarios', {
+  @get('/beneficiarios/{id}/solicitud-servicio-funerarios', {
     responses: {
       '200': {
-        description: 'Array of Cliente has many SolicitudServicioFunerario',
+        description: 'Array of Beneficiario has many SolicitudServicioFunerario',
         content: {
           'application/json': {
             schema: {type: 'array', items: getModelSchemaRef(SolicitudServicioFunerario)},
@@ -43,56 +42,38 @@ export class ClienteSolicitudServicioFunerarioController {
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<SolicitudServicioFunerario>,
   ): Promise<SolicitudServicioFunerario[]> {
-    return this.clienteRepository.solicitudServicioFunerarios(id).find(filter);
+    return this.beneficiarioRepository.solicitudServicioFunerarios(id).find(filter);
   }
 
-  @get('/listar-solicitudes', {
+  @post('/beneficiarios/{id}/solicitud-servicio-funerarios', {
     responses: {
       '200': {
-        description: 'Array of all SolicitudServicioFunerario',
-        content: {
-          'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(SolicitudServicioFunerario)},
-          },
-        },
-      },
-    },
-  })
-  async listarTodasSolicitudes(
-    @param.query.object('filter') filter?: Filter<SolicitudServicioFunerario>,
-  ): Promise<SolicitudServicioFunerario[]> {
-    return this.solicitudServicioFunerarioRepository.find(filter);
-  }
-
-  @post('/clientes/{id}/solicitud-servicio-funerarios', {
-    responses: {
-      '200': {
-        description: 'Cliente model instance',
+        description: 'Beneficiario model instance',
         content: {'application/json': {schema: getModelSchemaRef(SolicitudServicioFunerario)}},
       },
     },
   })
   async create(
-    @param.path.number('id') id: typeof Cliente.prototype.id,
+    @param.path.number('id') id: typeof Beneficiario.prototype.id,
     @requestBody({
       content: {
         'application/json': {
           schema: getModelSchemaRef(SolicitudServicioFunerario, {
-            title: 'NewSolicitudServicioFunerarioInCliente',
+            title: 'NewSolicitudServicioFunerarioInBeneficiario',
             exclude: ['id'],
-            optional: ['clienteId']
+            optional: ['beneficiarioId']
           }),
         },
       },
     }) solicitudServicioFunerario: Omit<SolicitudServicioFunerario, 'id'>,
   ): Promise<SolicitudServicioFunerario> {
-    return this.clienteRepository.solicitudServicioFunerarios(id).create(solicitudServicioFunerario);
+    return this.beneficiarioRepository.solicitudServicioFunerarios(id).create(solicitudServicioFunerario);
   }
 
-  @patch('/clientes/{id}/solicitud-servicio-funerarios', {
+  @patch('/beneficiarios/{id}/solicitud-servicio-funerarios', {
     responses: {
       '200': {
-        description: 'Cliente.SolicitudServicioFunerario PATCH success count',
+        description: 'Beneficiario.SolicitudServicioFunerario PATCH success count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
@@ -109,13 +90,13 @@ export class ClienteSolicitudServicioFunerarioController {
     solicitudServicioFunerario: Partial<SolicitudServicioFunerario>,
     @param.query.object('where', getWhereSchemaFor(SolicitudServicioFunerario)) where?: Where<SolicitudServicioFunerario>,
   ): Promise<Count> {
-    return this.clienteRepository.solicitudServicioFunerarios(id).patch(solicitudServicioFunerario, where);
+    return this.beneficiarioRepository.solicitudServicioFunerarios(id).patch(solicitudServicioFunerario, where);
   }
 
-  @del('/clientes/{id}/solicitud-servicio-funerarios', {
+  @del('/beneficiarios/{id}/solicitud-servicio-funerarios', {
     responses: {
       '200': {
-        description: 'Cliente.SolicitudServicioFunerario DELETE success count',
+        description: 'Beneficiario.SolicitudServicioFunerario DELETE success count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
@@ -124,6 +105,6 @@ export class ClienteSolicitudServicioFunerarioController {
     @param.path.number('id') id: number,
     @param.query.object('where', getWhereSchemaFor(SolicitudServicioFunerario)) where?: Where<SolicitudServicioFunerario>,
   ): Promise<Count> {
-    return this.clienteRepository.solicitudServicioFunerarios(id).delete(where);
+    return this.beneficiarioRepository.solicitudServicioFunerarios(id).delete(where);
   }
 }

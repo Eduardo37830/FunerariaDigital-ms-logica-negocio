@@ -19,7 +19,7 @@ import {
   response,
 } from '@loopback/rest';
 import {ConfiguracionNotificaciones} from '../config/notificaciones.config';
-import {Sala, ServicioFunerario, SolicitudServicioFunerario} from '../models';
+import {Cliente, Sala, ServicioFunerario, SolicitudServicioFunerario} from '../models';
 import {BeneficiarioRepository, ClienteRepository, ConductorRepository, SalaRepository, ServicioFunerarioRepository, SolicitudServicioFunerarioRepository} from '../repositories';
 import {NotificacionesService} from '../services';
 import {SeguridadService} from '../services/seguridad.service';
@@ -51,7 +51,7 @@ export class ServicioFunerarioController {
    * @param idCliente
    * @returns
    */
-  /*async obtenerClienteConBeneficiarios(idCliente: number): Promise<Cliente | null> {
+  async obtenerClienteConBeneficiarios(idCliente: number): Promise<Cliente | null> {
     // Obtener el cliente por su ID
     const cliente = await this.clienteRepository.findById(idCliente);
     if (!cliente) {
@@ -67,7 +67,7 @@ export class ServicioFunerarioController {
     cliente.beneficiarios = beneficiarios;
 
     return cliente;
-  }*/
+  }
 
   /**
    * Obtiene las salas disponibles según la hora de asignación y salida del servicio funerario.
@@ -125,16 +125,16 @@ export class ServicioFunerarioController {
 
     //Enviar codigoUnico por notificacion sms o email - Enviar correo tanto al Conductor como al cliente con los datos del servicio generado
 
-    const cliente = await this.clienteRepository.findById(this.solicitudServicioFunerario.clienteId);
     const conductor = await this.conductorRepository.findById(servicioFunerario.conductorId);
     const solicitud = await this.solicitudServicioFunerarioRepository.findById(servicioFunerario.solicitudServicioFunerarioId)
-    //const clienteConBeneficiarios = await this.obtenerClienteConBeneficiarios(this.solicitudServicioFunerario.clienteId);
+    const beneficiario = await this.beneficiarioRepository.findById(this.solicitudServicioFunerario.beneficiarioId)
+    const cliente = await this.clienteRepository.findById(beneficiario.clienteId)
 
-    //for (let beneficiario of clienteConBeneficiarios!.beneficiarios) {
-    // if (solicitud.ubicacionDelCuerpo == beneficiario.celular) {
-    // servicioFunerario.traslado = true;
-    //}
-    //}
+
+    if (solicitud.ubicacionDelCuerpo == beneficiario.celular) {
+      servicioFunerario.traslado = true;
+    } else servicioFunerario.traslado = true;
+
 
     console.log("Cliente: ", cliente.correo)
     console.log("Conductor: ", conductor.correo)
@@ -148,15 +148,11 @@ export class ServicioFunerarioController {
       }
 
       for (let sala of salasDisponibles) {
-        if (sala.id == servicioFunerario.salas[0].id) {
-          break;
-        }
+        //if (sala.id == servicioFunerario.salas[0].id) {
+        //servicioFunerario.s
+        //break;
+        //}
       }
-    }
-
-    if (this.solicitudServicioFunerario.clienteId == cliente.id) {
-      console.log("Cliente " + cliente.correo)
-
     }
 
     // Correo al Cliente
