@@ -1,19 +1,10 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
   repository,
-  Where,
 } from '@loopback/repository';
 import {
-  del,
+  param,
   get,
   getModelSchemaRef,
-  getWhereSchemaFor,
-  param,
-  patch,
-  post,
-  requestBody,
 } from '@loopback/rest';
 import {
   Conductor,
@@ -23,88 +14,25 @@ import {ConductorRepository} from '../repositories';
 
 export class ConductorServicioFunerarioController {
   constructor(
-    @repository(ConductorRepository) protected conductorRepository: ConductorRepository,
+    @repository(ConductorRepository)
+    public conductorRepository: ConductorRepository,
   ) { }
 
-  @get('/conductors/{id}/servicio-funerarios', {
+  @get('/conductors/{id}/servicio-funerario', {
     responses: {
       '200': {
-        description: 'Array of Conductor has many ServicioFunerario',
+        description: 'ServicioFunerario belonging to Conductor',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(ServicioFunerario)},
+            schema: getModelSchemaRef(ServicioFunerario),
           },
         },
       },
     },
   })
-  async find(
-    @param.path.number('id') id: number,
-    @param.query.object('filter') filter?: Filter<ServicioFunerario>,
-  ): Promise<ServicioFunerario[]> {
-    return this.conductorRepository.servicioFunerarios(id).find(filter);
-  }
-
-  @post('/conductors/{id}/servicio-funerarios', {
-    responses: {
-      '200': {
-        description: 'Conductor model instance',
-        content: {'application/json': {schema: getModelSchemaRef(ServicioFunerario)}},
-      },
-    },
-  })
-  async create(
+  async getServicioFunerario(
     @param.path.number('id') id: typeof Conductor.prototype.id,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(ServicioFunerario, {
-            title: 'NewServicioFunerarioInConductor',
-            exclude: ['id'],
-            optional: ['conductorId']
-          }),
-        },
-      },
-    }) servicioFunerario: Omit<ServicioFunerario, 'id'>,
   ): Promise<ServicioFunerario> {
-    return this.conductorRepository.servicioFunerarios(id).create(servicioFunerario);
-  }
-
-  @patch('/conductors/{id}/servicio-funerarios', {
-    responses: {
-      '200': {
-        description: 'Conductor.ServicioFunerario PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
-      },
-    },
-  })
-  async patch(
-    @param.path.number('id') id: number,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(ServicioFunerario, {partial: true}),
-        },
-      },
-    })
-    servicioFunerario: Partial<ServicioFunerario>,
-    @param.query.object('where', getWhereSchemaFor(ServicioFunerario)) where?: Where<ServicioFunerario>,
-  ): Promise<Count> {
-    return this.conductorRepository.servicioFunerarios(id).patch(servicioFunerario, where);
-  }
-
-  @del('/conductors/{id}/servicio-funerarios', {
-    responses: {
-      '200': {
-        description: 'Conductor.ServicioFunerario DELETE success count',
-        content: {'application/json': {schema: CountSchema}},
-      },
-    },
-  })
-  async delete(
-    @param.path.number('id') id: number,
-    @param.query.object('where', getWhereSchemaFor(ServicioFunerario)) where?: Where<ServicioFunerario>,
-  ): Promise<Count> {
-    return this.conductorRepository.servicioFunerarios(id).delete(where);
+    return this.conductorRepository.servicioFunerario(id);
   }
 }

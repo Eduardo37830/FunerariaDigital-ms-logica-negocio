@@ -4,14 +4,14 @@ import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
 @model({
   settings: {
     foreignKeys: {
-      fk_sala_chat_solicitudServicioFunerarioId: {
-        name: 'fk_sala_chat_solicitudServicioFunerarioId',
+      fk_salaChat_solicitudServicioFunerarioId: {
+        name: 'fk_salaChat_solicitudServicioFunerarioId',
         entity: 'SolicitudServicioFunerario',
         entityKey: 'id',
         foreignKey: 'solicitudServicioFunerarioId',
-      },
+      }
     },
-  },
+  }
 })
 export class SalaChat extends Entity {
   @property({

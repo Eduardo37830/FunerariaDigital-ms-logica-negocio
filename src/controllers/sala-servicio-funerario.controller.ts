@@ -1,19 +1,10 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
   repository,
-  Where,
 } from '@loopback/repository';
 import {
-  del,
+  param,
   get,
   getModelSchemaRef,
-  getWhereSchemaFor,
-  param,
-  patch,
-  post,
-  requestBody,
 } from '@loopback/rest';
 import {
   Sala,
@@ -23,88 +14,25 @@ import {SalaRepository} from '../repositories';
 
 export class SalaServicioFunerarioController {
   constructor(
-    @repository(SalaRepository) protected salaRepository: SalaRepository,
+    @repository(SalaRepository)
+    public salaRepository: SalaRepository,
   ) { }
 
-  @get('/salas/{id}/servicio-funerarios', {
+  @get('/salas/{id}/servicio-funerario', {
     responses: {
       '200': {
-        description: 'Array of Sala has many ServicioFunerario',
+        description: 'ServicioFunerario belonging to Sala',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(ServicioFunerario)},
+            schema: getModelSchemaRef(ServicioFunerario),
           },
         },
       },
     },
   })
-  async find(
-    @param.path.number('id') id: number,
-    @param.query.object('filter') filter?: Filter<ServicioFunerario>,
-  ): Promise<ServicioFunerario[]> {
-    return this.salaRepository.servicioFunerarios(id).find(filter);
-  }
-
-  @post('/salas/{id}/servicio-funerarios', {
-    responses: {
-      '200': {
-        description: 'Sala model instance',
-        content: {'application/json': {schema: getModelSchemaRef(ServicioFunerario)}},
-      },
-    },
-  })
-  async create(
+  async getServicioFunerario(
     @param.path.number('id') id: typeof Sala.prototype.id,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(ServicioFunerario, {
-            title: 'NewServicioFunerarioInSala',
-            exclude: ['id'],
-            optional: ['salaId']
-          }),
-        },
-      },
-    }) servicioFunerario: Omit<ServicioFunerario, 'id'>,
   ): Promise<ServicioFunerario> {
-    return this.salaRepository.servicioFunerarios(id).create(servicioFunerario);
-  }
-
-  @patch('/salas/{id}/servicio-funerarios', {
-    responses: {
-      '200': {
-        description: 'Sala.ServicioFunerario PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
-      },
-    },
-  })
-  async patch(
-    @param.path.number('id') id: number,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(ServicioFunerario, {partial: true}),
-        },
-      },
-    })
-    servicioFunerario: Partial<ServicioFunerario>,
-    @param.query.object('where', getWhereSchemaFor(ServicioFunerario)) where?: Where<ServicioFunerario>,
-  ): Promise<Count> {
-    return this.salaRepository.servicioFunerarios(id).patch(servicioFunerario, where);
-  }
-
-  @del('/salas/{id}/servicio-funerarios', {
-    responses: {
-      '200': {
-        description: 'Sala.ServicioFunerario DELETE success count',
-        content: {'application/json': {schema: CountSchema}},
-      },
-    },
-  })
-  async delete(
-    @param.path.number('id') id: number,
-    @param.query.object('where', getWhereSchemaFor(ServicioFunerario)) where?: Where<ServicioFunerario>,
-  ): Promise<Count> {
-    return this.salaRepository.servicioFunerarios(id).delete(where);
+    return this.salaRepository.servicioFunerario(id);
   }
 }

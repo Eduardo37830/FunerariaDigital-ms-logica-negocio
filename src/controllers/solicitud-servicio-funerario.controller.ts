@@ -270,7 +270,11 @@ export class SolicitudServicioFunerarioController {
     // Obtener el cliente con sus beneficiarios
     const clienteConBeneficiarios = await this.obtenerClienteConBeneficiarios(solicitudServicio.clienteId);
 
-    if (cliente.activo && solicitudServicio.idBeneficiario != cliente.id) {
+    if (cliente.activo == false) {
+      throw new HttpErrors[401](`Cliente inactivo.`);
+    }
+
+    if (solicitudServicio.idBeneficiario != cliente.id) {
 
       if (clienteConBeneficiarios) {
 
@@ -294,7 +298,7 @@ export class SolicitudServicioFunerarioController {
             solicitudServicio.estadoAceptado == true;
 
             const url = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
-            this.servicioNotificaciones.EnviarNotificacion(datos, url);
+            //this.servicioNotificaciones.EnviarNotificacion(datos, url);
             await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
           } else {
             throw new HttpErrors[401](`Beneficiario no corresponde con la solicitud  o este se encuentra inactivo.`);
@@ -303,12 +307,8 @@ export class SolicitudServicioFunerarioController {
       } else {
         throw new HttpErrors[401](`Beneficiario no encontrado o este se encuentra inactivo.`);
       }
-    }
-    if (cliente.activo == false) {
-      throw new HttpErrors[401](`Cliente inactivo.`);
-    }
+    } else {
 
-    if (cliente.id == solicitudServicio.idBeneficiario) {
       if (clienteConBeneficiarios) {
         // Si el cliente es el fallecido cambiar a Benefciciario y asignar un nuevo cliente
         for (let beneficiario of clienteConBeneficiarios!.beneficiarios) {
@@ -362,7 +362,7 @@ export class SolicitudServicioFunerarioController {
             solicitudServicio.estadoAceptado == true;
 
             const url = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
-            this.servicioNotificaciones.EnviarNotificacion(datos, url);
+            //this.servicioNotificaciones.EnviarNotificacion(datos, url);
             await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
             break;
           } else {
@@ -370,8 +370,6 @@ export class SolicitudServicioFunerarioController {
           }
         }
       }
-    } else {
-      throw new HttpErrors[401](`El cliente no cuenta con beneficiarios activos.`);
     }
     return newSolicitudServicio;
   }

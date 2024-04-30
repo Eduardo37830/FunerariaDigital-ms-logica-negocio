@@ -1,9 +1,9 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyRepositoryFactory, BelongsToAccessor} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {BelongsToAccessor, DefaultCrudRepository, repository} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {Conductor, ConductorRelations, ServicioFunerario, Sede} from '../models';
-import {ServicioFunerarioRepository} from './servicio-funerario.repository';
+import {Conductor, ConductorRelations, Sede, ServicioFunerario} from '../models';
 import {SedeRepository} from './sede.repository';
+import {ServicioFunerarioRepository} from './servicio-funerario.repository';
 
 export class ConductorRepository extends DefaultCrudRepository<
   Conductor,
@@ -11,17 +11,17 @@ export class ConductorRepository extends DefaultCrudRepository<
   ConductorRelations
 > {
 
-  public readonly servicioFunerarios: HasManyRepositoryFactory<ServicioFunerario, typeof Conductor.prototype.id>;
-
   public readonly sede: BelongsToAccessor<Sede, typeof Conductor.prototype.id>;
 
+  public readonly servicioFunerario: BelongsToAccessor<ServicioFunerario, typeof Conductor.prototype.id>;
+
   constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('ServicioFunerarioRepository') protected servicioFunerarioRepositoryGetter: Getter<ServicioFunerarioRepository>, @repository.getter('SedeRepository') protected sedeRepositoryGetter: Getter<SedeRepository>,
+    @inject('datasources.mysql') dataSource: MysqlDataSource, @repository.getter('SedeRepository') protected sedeRepositoryGetter: Getter<SedeRepository>, @repository.getter('ServicioFunerarioRepository') protected servicioFunerarioRepositoryGetter: Getter<ServicioFunerarioRepository>,
   ) {
     super(Conductor, dataSource);
+    this.servicioFunerario = this.createBelongsToAccessorFor('servicioFunerario', servicioFunerarioRepositoryGetter,);
+    this.registerInclusionResolver('servicioFunerario', this.servicioFunerario.inclusionResolver);
     this.sede = this.createBelongsToAccessorFor('sede', sedeRepositoryGetter,);
     this.registerInclusionResolver('sede', this.sede.inclusionResolver);
-    this.servicioFunerarios = this.createHasManyRepositoryFactoryFor('servicioFunerarios', servicioFunerarioRepositoryGetter,);
-    this.registerInclusionResolver('servicioFunerarios', this.servicioFunerarios.inclusionResolver);
   }
 }

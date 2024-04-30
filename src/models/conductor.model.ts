@@ -1,4 +1,4 @@
-import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Sede} from './sede.model';
 import {ServicioFunerario} from './servicio-funerario.model';
 
@@ -11,8 +11,14 @@ import {ServicioFunerario} from './servicio-funerario.model';
         entityKey: 'id',
         foreignKey: 'sedeId',
       },
+      fk_conductor_servicioFunerarioId: {
+        name: 'fk_conductor_servicioFunerarioId',
+        entity: 'ServicioFunerario',
+        entityKey: 'id',
+        foreignKey: 'servicioFunerarioId',
+      },
     },
-  },
+  }
 })
 export class Conductor extends Entity {
   @property({
@@ -79,11 +85,11 @@ export class Conductor extends Entity {
   })
   responsabilidades?: string;
 
-  @hasMany(() => ServicioFunerario)
-  servicioFunerarios: ServicioFunerario[];
-
   @belongsTo(() => Sede)
   sedeId: number;
+
+  @belongsTo(() => ServicioFunerario)
+  servicioFunerarioId: number;
 
   constructor(data?: Partial<Conductor>) {
     super(data);

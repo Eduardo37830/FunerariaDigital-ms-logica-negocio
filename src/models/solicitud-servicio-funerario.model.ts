@@ -6,8 +6,8 @@ import {ServicioFunerario} from './servicio-funerario.model';
 @model({
   settings: {
     foreignKeys: {
-      fk_solicitud_servicio_funerario_clienteId: {
-        name: 'fk_solicitud_servicio_funerario_clienteId',
+      fk_solicitudServicioFunerario_clienteId: {
+        name: 'fk_solicitudServicioFunerario_clienteId',
         entity: 'Cliente',
         entityKey: 'id',
         foreignKey: 'clienteId',

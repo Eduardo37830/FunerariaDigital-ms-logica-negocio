@@ -12,7 +12,7 @@ import {Sede} from './sede.model';
         foreignKey: 'departamentoId',
       },
     },
-  },
+  }
 })
 
 export class Ciudad extends Entity {

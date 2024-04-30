@@ -8,32 +8,14 @@ import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
 @model({
   settings: {
     foreignKeys: {
-      fk_servicioFunerario_conductorId: {
-        name: 'fk_servicioFunerario_conductorId',
-        entity: 'Conductor',
-        entityKey: 'id',
-        foreignKey: 'conductorId',
-      },
-      fk_servicioFunerario_estadoServicioId: {
-        name: 'fk_servicioFunerario_estadoServicioId',
-        entity: 'EstadoServicio',
-        entityKey: 'id',
-        foreignKey: 'estadoServicioId',
-      },
       fk_servicioFunerario_solicitudServicioFunerarioId: {
         name: 'fk_servicioFunerario_solicitudServicioFunerarioId',
         entity: 'SolicitudServicioFunerario',
         entityKey: 'id',
         foreignKey: 'solicitudServicioFunerarioId',
       },
-      fk_servicioFunerario_salaId: {
-        name: 'fk_servicioFunerario_salaId',
-        entity: 'Sala',
-        entityKey: 'id',
-        foreignKey: 'salaId',
-      },
     },
-  }
+  },
 })
 export class ServicioFunerario extends Entity {
   @property({
@@ -67,20 +49,20 @@ export class ServicioFunerario extends Entity {
   })
   codigoUnicoServicio: string;
 
-  @belongsTo(() => Conductor)
-  conductorId: number;
-
-  @belongsTo(() => EstadoServicio)
-  estadoServicioId: number;
-
   @belongsTo(() => SolicitudServicioFunerario)
   solicitudServicioFunerarioId: number;
 
-  @belongsTo(() => Sala)
-  salaId: number;
-
   @hasMany(() => Comentario)
   comentarios: Comentario[];
+
+  @hasMany(() => Sala)
+  salas: Sala[];
+
+  @hasMany(() => Conductor)
+  conductors: Conductor[];
+
+  @hasMany(() => EstadoServicio)
+  estadoServicios: EstadoServicio[];
 
   constructor(data?: Partial<ServicioFunerario>) {
     super(data);

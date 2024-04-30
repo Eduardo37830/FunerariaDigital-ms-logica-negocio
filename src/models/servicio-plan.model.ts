@@ -3,20 +3,20 @@ import {Entity, model, property} from '@loopback/repository';
 @model({
   settings: {
     foreignKeys: {
-      fk_servicio_plan_servicioId: {
-        name: 'fk_servicio_plan_servicioId',
+      fk_servicioPlan_servicioId: {
+        name: 'fk_servicioPlan_servicioId',
         entity: 'Servicio',
         entityKey: 'id',
         foreignKey: 'servicioId',
       },
-      fk_servicio_plan_planId: {
-        name: 'fk_servicio_plan_planId',
+      fk_servicioPlan_planId: {
+        name: 'fk_servicioPlan_planId',
         entity: 'Plan',
         entityKey: 'id',
         foreignKey: 'planId',
       },
-    },
-  },
+    }
+  }
 })
 export class ServicioPlan extends Entity {
   @property({

@@ -12,7 +12,7 @@ import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
         foreignKey: 'clienteId',
       },
     }
-  },
+  }
 })
 export class Beneficiario extends Entity {
   @property({

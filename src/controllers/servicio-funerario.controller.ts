@@ -118,60 +118,71 @@ export class ServicioFunerarioController {
     servicioFunerario: Omit<ServicioFunerario, 'id'>,
   ): Promise<ServicioFunerario> {
 
-    const codigoUnicoServicio = this.servicioSeguridad.crearTextoAleatorio(6)
+    /* const codigoUnicoServicio = this.servicioSeguridad.crearTextoAleatorio(6)
 
-    console.log("Codigo unico: ", codigoUnicoServicio)
+     console.log("Codigo unico: ", codigoUnicoServicio)
 
-    //Enviar codigoUnico por notificacion sms o email - Enviar correo tanto al Conductor como al cliente con los datos del servicio generado
+     //Enviar codigoUnico por notificacion sms o email - Enviar correo tanto al Conductor como al cliente con los datos del servicio generado
 
-    /* const conductor = await this.conductorRepository.findById(servicioFunerario.conductorId);
+     const conductor = await this.conductorRepository.findById(servicioFunerario.conductorId);
      const solicitud = await this.solicitudServicioFunerarioRepository.findById(servicioFunerario.solicitudServicioFunerarioId)
-     const beneficiario = await this.beneficiarioRepository.findById(this.solicitudServicioFunerario.beneficiarioId)
+     const beneficiario = await this.beneficiarioRepository.findById(this.solicitudServicioFunerario.idBeneficiario)
      const cliente = await this.clienteRepository.findById(beneficiario.clienteId)
- 
- 
-     if (solicitud.ubicacionDelCuerpo == beneficiario.celular) {
+
+
+     if (solicitud.ubicacionDelCuerpo != beneficiario.ciudadResidencia) {
        servicioFunerario.traslado = true;
-     } else servicioFunerario.traslado = true;
- 
- 
+       console.log()
+     } else servicioFunerario.traslado = false;
+
      console.log("Cliente: ", cliente.correo)
      console.log("Conductor: ", conductor.correo)
      if (this.solicitudServicioFunerario.estadoAceptado) {
        const salasDisponibles = await this.obtenerSalasDisponibles();
- 
+
        console.log("Salas disponibles: ", salasDisponibles)
- 
+
        if (salasDisponibles.length == 0) {
          throw new Error("No hay salas disponibles para el servicio funerario");
        }
- 
+
        for (let sala of salasDisponibles) {
-         //if (sala.id == servicioFunerario.salas[0].id) {
-         //servicioFunerario.s
-         //break;
-         //}
+         if (sala.id == servicioFunerario.salaId) {
+           sala.id = salasDisponibles[0].id
+           let ahora = new Date(); // Obtener la fecha y hora actual
+
+           // Calcular la fecha y hora de inicio del servicio (3 días después de la solicitud)
+           let fechaHoraInicioServicio = ahora.getTime() + 3 * 24 * 60 * 60 * 1000;  // 3 dias en milisegundos
+
+           // Calcular la fecha y hora de fin del servicio (3 horas después del inicio)
+           let fechaHoraFinServicio = fechaHoraInicioServicio + 3 * 60 * 60 * 1000; // 3 horas en milisegundos
+
+           // Crear objetos de fecha y hora para la asignación y salida del servicio
+           sala.horaEntradaCuerpo = new Date(fechaHoraInicioServicio);
+           sala.horaSalidaCuerpo = new Date(fechaHoraFinServicio);
+
+           // Correo al Cliente
+           let datos = {
+             correoDestino: cliente.correo,
+             nombreDestino: cliente.primerNombre + " " + cliente.primerApellido,
+             contenidoCorreo: "Envio de datos del servicio funerario" + servicioFunerario.fecha + " Sala Asignada" + servicioFunerario.salaId + "Horario: Hora fin del servicio" + sala.horaEntradaCuerpo + "Hora fin del servicio" + sala.horaSalidaCuerpo + "Codigo para verificar Datos " + codigoUnicoServicio,  // **¡falta agregar que datos vamos a mostrar: Ciudad, Sede**
+             asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+           };
+
+           // Correo al Conductor
+           let datos2 = {
+             correoDestino: conductor.correo,
+             nombreDestino: conductor.primerNombre + " " + conductor.primerApellido,
+             contenidoCorreo: "Envio de datos del servicio funerario" + servicioFunerario.fecha + " Sala Asignada" + servicioFunerario.salaId + "Horario: Hora fin del servicio" + sala.horaEntradaCuerpo + "Hora fin del servicio" + sala.horaSalidaCuerpo + "Codigo para verificar Datos " + codigoUnicoServicio,  // **¡falta agregar que datos vamos a mostrar: Ciudad, Sede**
+             asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+           };
+
+           let url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
+           //this.servicioNotificaciones.EnviarNotificacion(datos, url);
+           //this.servicioNotificaciones.EnviarNotificacion(datos2, url);
+         }
        }
-     }
- 
-     // Correo al Cliente
-     let datos = {
-       correoDestino: cliente.correo,
-       nombreDestino: cliente.primerNombre + " " + cliente.primerApellido,
-       contenidoCorreo: "Envio de datos del servicio funerario" + servicioFunerario.fecha + " " + "servicioFunerario.salaId" + " " + codigoUnicoServicio,  // **¡falta agregar que datos vamos a mostrar: Ciudad, Sede**
-       asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
-     };
- 
-     // Correo al Conductor
-     let datos2 = {
-       correoDestino: conductor.correo,
-       nombreDestino: conductor.primerNombre + " " + conductor.primerApellido,
-       contenidoCorreo: "Envio de datos del servicio funerario" + servicioFunerario.fecha + " " + "servicioFunerario.salaId" + " " + codigoUnicoServicio,  // **¡falta agregar que datos vamos a mostrar: Ciudad, Sede**
-       asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
-     };
- 
-     let url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
-     //this.servicioNotificaciones.EnviarNotificacion(datos, url);*/
+     }*/
     return this.servicioFunerarioRepository.create(servicioFunerario);
   }
 
