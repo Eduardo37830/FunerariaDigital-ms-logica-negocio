@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,8 +23,8 @@ import {SalaRepository} from '../repositories';
 export class SalaController {
   constructor(
     @repository(SalaRepository)
-    public salaRepository : SalaRepository,
-  ) {}
+    public salaRepository: SalaRepository,
+  ) { }
 
   @post('/sala')
   @response(200, {
@@ -146,5 +146,54 @@ export class SalaController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.salaRepository.deleteById(id);
+  }
+
+  @post('/sala/verificar-disponibilidad')
+  @response(200, {
+    description: 'Verificar la disponibilidad de la sala para un rango de tiempo específico',
+    content: {'application/json': {schema: {type: 'object'}}},
+  })
+  async verificarDisponibilidad(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              horaEntrada: {type: 'string', format: 'date-time'},
+              horaSalida: {type: 'string', format: 'date-time'},
+              salaId: {type: 'number'},
+            },
+            required: ['horaEntrada', 'horaSalida', 'salaId'],
+          },
+        },
+      },
+    })
+    reserva: {horaEntrada: Date, horaSalida: Date, salaId?: number},
+  ): Promise<{disponible: boolean, mensaje?: string}> {
+    const {horaEntrada, horaSalida, salaId} = reserva;
+
+    // Obtener las reservas existentes para la sala en el rango de tiempo especificado
+    const reservasExistentes: Sala[] = await this.salaRepository.find({
+      where: {
+        and: [
+          {id: salaId},
+          {
+            or: [
+              {horaEntradaCuerpo: {between: [horaEntrada, horaSalida]}},
+              {horaSalidaCuerpo: {between: [horaEntrada, horaSalida]}},
+            ],
+          },
+        ],
+      },
+    });
+
+    // Si hay reservas existentes, la sala no está disponible
+    if (reservasExistentes.length > 0) {
+      return {disponible: false, mensaje: 'La sala no está disponible en el horario especificado.'};
+    }
+
+    // Si no hay reservas existentes, la sala está disponible
+    return {disponible: true};
   }
 }

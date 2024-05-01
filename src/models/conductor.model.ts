@@ -85,6 +85,12 @@ export class Conductor extends Entity {
   })
   responsabilidades?: string;
 
+  @property({
+    type: 'boolean',
+    required: true,
+  })
+  disponibilidad?: boolean;
+
   @belongsTo(() => Sede)
   sedeId: number;
 
