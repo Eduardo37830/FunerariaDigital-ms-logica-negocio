@@ -47,7 +47,7 @@ export class Plan extends Entity {
     type: 'number',
     required: true,
   })
-  cantidadBeneficios: number;
+  cantidadBeneficiarios: number;
 
   @hasMany(() => Servicio, {through: {model: () => ServicioPlan}})
   servicios: Servicio[];

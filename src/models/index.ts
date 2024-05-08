@@ -20,3 +20,4 @@ export * from './comentario.model';
 export * from './generar-pqrs.model';
 
 export * from './credenciales-codigo-unico.model';
+export * from './paginador-plan.model';
