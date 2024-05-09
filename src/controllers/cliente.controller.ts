@@ -130,6 +130,30 @@ export class ClienteController {
     return this.clienteSolicitudServicioController.find(clienteId!); // Llama al método find del controlador de cliente-solicitud-servicio-funerario
   }
 
+  @get('/cliente-paginado')
+  @response(200, {
+    description: 'Array of Cliente model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Cliente, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findToPagination(
+    @param.filter(Cliente) filter?: Filter<Cliente>,
+  ): Promise<object> {
+    let total: number = (await this.clienteRepository.count()).count;
+    let registros: Cliente[] = await this.clienteRepository.find(filter);
+    let respuesta = {
+      registros: registros,
+      totalRegistros: total
+    }
+    return respuesta;
+  }
+
   @patch('/cliente/{id}')
   @response(204, {
     description: 'Cliente PATCH success',

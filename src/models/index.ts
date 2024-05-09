@@ -21,3 +21,4 @@ export * from './generar-pqrs.model';
 
 export * from './credenciales-codigo-unico.model';
 export * from './paginador-plan.model';
+export * from './paginador-cliente.model';
