@@ -145,9 +145,9 @@ export class ClienteController {
   async findToPagination(
     @param.filter(Cliente) filter?: Filter<Cliente>,
   ): Promise<object> {
-    let total: number = (await this.clienteRepository.count()).count;
-    let registros: Cliente[] = await this.clienteRepository.find(filter);
-    let respuesta = {
+    const total: number = (await this.clienteRepository.count()).count;
+    const registros: Cliente[] = await this.clienteRepository.find(filter);
+    const respuesta = {
       registros: registros,
       totalRegistros: total
     }

@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,8 +23,8 @@ import {DepartamentoRepository} from '../repositories';
 export class DepartamentoController {
   constructor(
     @repository(DepartamentoRepository)
-    public departamentoRepository : DepartamentoRepository,
-  ) {}
+    public departamentoRepository: DepartamentoRepository,
+  ) { }
 
   @post('/departamento')
   @response(200, {
@@ -109,6 +109,30 @@ export class DepartamentoController {
     @param.filter(Departamento, {exclude: 'where'}) filter?: FilterExcludingWhere<Departamento>
   ): Promise<Departamento> {
     return this.departamentoRepository.findById(id, filter);
+  }
+
+  @get('/departamento-paginado')
+  @response(200, {
+    description: 'Array of Departamento model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Departamento, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findToPagination(
+    @param.filter(Departamento) filter?: Filter<Departamento>,
+  ): Promise<object> {
+    const total: number = (await this.departamentoRepository.count()).count;
+    const registros: Departamento[] = await this.departamentoRepository.find(filter);
+    const respuesta = {
+      registros: registros,
+      totalRegistros: total
+    }
+    return respuesta;
   }
 
   @patch('/departamento/{id}')

@@ -16,8 +16,8 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {
-  Sede,
   Sala,
+  Sede,
 } from '../models';
 import {SedeRepository} from '../repositories';
 

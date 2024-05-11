@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,8 +23,8 @@ import {SedeRepository} from '../repositories';
 export class SedeController {
   constructor(
     @repository(SedeRepository)
-    public sedeRepository : SedeRepository,
-  ) {}
+    public sedeRepository: SedeRepository,
+  ) { }
 
   @post('/sede')
   @response(200, {
@@ -74,6 +74,30 @@ export class SedeController {
     @param.filter(Sede) filter?: Filter<Sede>,
   ): Promise<Sede[]> {
     return this.sedeRepository.find(filter);
+  }
+
+  @get('/sede-paginado')
+  @response(200, {
+    description: 'Array of Sede model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Sede, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findToPagination(
+    @param.filter(Sede) filter?: Filter<Sede>,
+  ): Promise<object> {
+    let total: number = (await this.sedeRepository.count()).count;
+    let registros: Sede[] = await this.sedeRepository.find(filter);
+    let respuesta = {
+      registros: registros,
+      totalRegistros: total
+    }
+    return respuesta;
   }
 
   @patch('/sede')

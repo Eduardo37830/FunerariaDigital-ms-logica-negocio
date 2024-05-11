@@ -111,6 +111,31 @@ export class SalaController {
     return this.salaRepository.findById(id, filter);
   }
 
+  @get('/sala-paginado')
+  @response(200, {
+    description: 'Array of Sala model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Sala, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findToPagination(
+    @param.filter(Sala) filter?: Filter<Sala>,
+  ): Promise<object> {
+    const total: number = (await this.salaRepository.count()).count;
+    const registros: Sala[] = await this.salaRepository.find(filter);
+    const respuesta = {
+      registros: registros,
+      totalRegistros: total
+    }
+    return respuesta;
+  }
+
+
   @patch('/sala/{id}')
   @response(204, {
     description: 'Sala PATCH success',

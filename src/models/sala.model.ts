@@ -32,6 +32,12 @@ export class Sala extends Entity {
     type: 'string',
     required: true,
   })
+  nombre: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   tipo: string;
 
   @property({

@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,8 +23,8 @@ import {CiudadRepository} from '../repositories';
 export class CiudadController {
   constructor(
     @repository(CiudadRepository)
-    public ciudadRepository : CiudadRepository,
-  ) {}
+    public ciudadRepository: CiudadRepository,
+  ) { }
 
   @post('/ciudad')
   @response(200, {
@@ -109,6 +109,30 @@ export class CiudadController {
     @param.filter(Ciudad, {exclude: 'where'}) filter?: FilterExcludingWhere<Ciudad>
   ): Promise<Ciudad> {
     return this.ciudadRepository.findById(id, filter);
+  }
+
+  @get('/ciudad-paginado')
+  @response(200, {
+    description: 'Array of Ciudad model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Ciudad, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findToPagination(
+    @param.filter(Ciudad) filter?: Filter<Ciudad>,
+  ): Promise<object> {
+    const total: number = (await this.ciudadRepository.count()).count;
+    const registros: Ciudad[] = await this.ciudadRepository.find(filter);
+    const respuesta = {
+      registros: registros,
+      totalRegistros: total
+    }
+    return respuesta;
   }
 
   @patch('/ciudad/{id}')
