@@ -14,6 +14,12 @@ import {SolicitudServicioFunerario} from './solicitud-servicio-funerario.model';
         entityKey: 'id',
         foreignKey: 'solicitudServicioFunerarioId',
       },
+      fk_servicioFunerario_salaId: {
+        name: 'fk_servicioFunerario_salaId',
+        entity: 'Sala',
+        entityKey: 'id',
+        foreignKey: 'salaId',
+      }
     },
   },
 })
@@ -55,14 +61,14 @@ export class ServicioFunerario extends Entity {
   @hasMany(() => Comentario)
   comentarios: Comentario[];
 
-  @hasMany(() => Sala)
-  salas: Sala[];
-
   @hasMany(() => Conductor)
   conductors: Conductor[];
 
   @hasMany(() => EstadoServicio)
   estadoServicios: EstadoServicio[];
+
+  @belongsTo(() => Sala)
+  salaId: number;
 
   constructor(data?: Partial<ServicioFunerario>) {
     super(data);

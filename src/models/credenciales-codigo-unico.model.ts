@@ -8,7 +8,6 @@ export class CredencialesCodigoUnico extends Model {
   })
   codigoUnico: string;
 
-
   constructor(data?: Partial<CredencialesCodigoUnico>) {
     super(data);
   }

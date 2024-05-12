@@ -42,9 +42,6 @@ export class Sede extends Entity {
   })
   direccion: string;
 
-  @belongsTo(() => Ciudad)
-  ciudadId: number;
-
   @hasMany(() => Sala)
   salas: Sala[];
 
@@ -53,6 +50,9 @@ export class Sede extends Entity {
 
   @hasMany(() => Conductor)
   conductors: Conductor[];
+
+  @belongsTo(() => Ciudad)
+  ciudadId: number;
 
   constructor(data?: Partial<Sede>) {
     super(data);

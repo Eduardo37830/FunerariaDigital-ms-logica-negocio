@@ -26,26 +26,26 @@ export class CiudadSedeController {
     @repository(CiudadRepository) protected ciudadRepository: CiudadRepository,
   ) { }
 
-  @get('/ciudads/{id}/sede', {
+  @get('/ciudads/{id}/sedes', {
     responses: {
       '200': {
-        description: 'Ciudad has one Sede',
+        description: 'Array of Ciudad has many Sede',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Sede),
+            schema: {type: 'array', items: getModelSchemaRef(Sede)},
           },
         },
       },
     },
   })
-  async get(
+  async find(
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<Sede>,
-  ): Promise<Sede> {
-    return this.ciudadRepository.sede(id).get(filter);
+  ): Promise<Sede[]> {
+    return this.ciudadRepository.sedes(id).find(filter);
   }
 
-  @post('/ciudads/{id}/sede', {
+  @post('/ciudads/{id}/sedes', {
     responses: {
       '200': {
         description: 'Ciudad model instance',
@@ -67,10 +67,10 @@ export class CiudadSedeController {
       },
     }) sede: Omit<Sede, 'id'>,
   ): Promise<Sede> {
-    return this.ciudadRepository.sede(id).create(sede);
+    return this.ciudadRepository.sedes(id).create(sede);
   }
 
-  @patch('/ciudads/{id}/sede', {
+  @patch('/ciudads/{id}/sedes', {
     responses: {
       '200': {
         description: 'Ciudad.Sede PATCH success count',
@@ -90,10 +90,10 @@ export class CiudadSedeController {
     sede: Partial<Sede>,
     @param.query.object('where', getWhereSchemaFor(Sede)) where?: Where<Sede>,
   ): Promise<Count> {
-    return this.ciudadRepository.sede(id).patch(sede, where);
+    return this.ciudadRepository.sedes(id).patch(sede, where);
   }
 
-  @del('/ciudads/{id}/sede', {
+  @del('/ciudads/{id}/sedes', {
     responses: {
       '200': {
         description: 'Ciudad.Sede DELETE success count',
@@ -105,6 +105,6 @@ export class CiudadSedeController {
     @param.path.number('id') id: number,
     @param.query.object('where', getWhereSchemaFor(Sede)) where?: Where<Sede>,
   ): Promise<Count> {
-    return this.ciudadRepository.sede(id).delete(where);
+    return this.ciudadRepository.sedes(id).delete(where);
   }
 }

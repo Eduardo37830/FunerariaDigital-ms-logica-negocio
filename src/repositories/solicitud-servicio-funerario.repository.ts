@@ -1,11 +1,11 @@
 import {Getter, inject} from '@loopback/core';
-import {DefaultCrudRepository, HasManyRepositoryFactory, repository, BelongsToAccessor} from '@loopback/repository';
+import {BelongsToAccessor, DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
 import {MysqlDataSource} from '../datasources';
-import {SalaChat, ServicioFunerario, SolicitudServicioFunerario, SolicitudServicioFunerarioRelations, Cliente} from '../models';
+import {Cliente, SalaChat, ServicioFunerario, SolicitudServicioFunerario, SolicitudServicioFunerarioRelations} from '../models';
+import {ClienteRepository} from './cliente.repository';
 import {ComentarioRepository} from './comentario.repository';
 import {SalaChatRepository} from './sala-chat.repository';
 import {ServicioFunerarioRepository} from './servicio-funerario.repository';
-import {ClienteRepository} from './cliente.repository';
 
 export class SolicitudServicioFunerarioRepository extends DefaultCrudRepository<
   SolicitudServicioFunerario,
