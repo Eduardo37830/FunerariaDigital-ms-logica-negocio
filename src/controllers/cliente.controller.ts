@@ -154,6 +154,31 @@ export class ClienteController {
     return respuesta;
   }
 
+  @get('/cliente-por-fecha')
+  @response(200, {
+    description: 'Array of Cliente model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: {
+            'x-ts-type': Cliente,
+          },
+        },
+      },
+    },
+  })
+  async findByFechaRegistro(
+    @param.query.string('fechaRegistro') fechaRegistro: Date,
+    @param.filter(Cliente) filter?: Filter<Cliente>,
+  ): Promise<Cliente[]> {
+    return this.clienteRepository.find({
+      where: {
+        fechaRegistro: fechaRegistro,
+      },
+    });
+  }
+
   @patch('/cliente/{id}')
   @response(204, {
     description: 'Cliente PATCH success',
