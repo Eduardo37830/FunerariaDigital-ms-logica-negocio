@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,8 +23,8 @@ import {BeneficiarioRepository} from '../repositories';
 export class BeneficiarioController {
   constructor(
     @repository(BeneficiarioRepository)
-    public beneficiarioRepository : BeneficiarioRepository,
-  ) {}
+    public beneficiarioRepository: BeneficiarioRepository,
+  ) { }
 
   @post('/beneficiario')
   @response(200, {
@@ -74,6 +74,30 @@ export class BeneficiarioController {
     @param.filter(Beneficiario) filter?: Filter<Beneficiario>,
   ): Promise<Beneficiario[]> {
     return this.beneficiarioRepository.find(filter);
+  }
+
+  @get('/beneficiario-paginado')
+  @response(200, {
+    description: 'Array of Beneficiario model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Beneficiario, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findToPagination(
+    @param.filter(Beneficiario) filter?: Filter<Beneficiario>,
+  ): Promise<object> {
+    const total: number = (await this.beneficiarioRepository.count()).count;
+    const registros: Beneficiario[] = await this.beneficiarioRepository.find(filter);
+    const respuesta = {
+      registros: registros,
+      totalRegistros: total
+    }
+    return respuesta;
   }
 
   @patch('/beneficiario')

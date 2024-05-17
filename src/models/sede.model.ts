@@ -42,6 +42,12 @@ export class Sede extends Entity {
   })
   direccion: string;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  contacto: string;
+
   @hasMany(() => Sala)
   salas: Sala[];
 

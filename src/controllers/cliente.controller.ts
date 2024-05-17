@@ -171,10 +171,14 @@ export class ClienteController {
   async findByFechaRegistro(
     @param.query.string('fechaRegistro') fechaRegistro: Date,
     @param.filter(Cliente) filter?: Filter<Cliente>,
-  ): Promise<Cliente[]> {
+  ): Promise<any> {
+    let fechaInicio = new Date(fechaRegistro);
+    fechaInicio.setHours(0, 0, 0, 0);
+    let fechaFin = new Date(fechaRegistro);
+    fechaFin.setHours(23, 59, 59, 999);
     return this.clienteRepository.find({
       where: {
-        fechaRegistro: fechaRegistro,
+        activo: fechaRegistro >= fechaInicio && fechaRegistro <= fechaFin,
       },
     });
   }

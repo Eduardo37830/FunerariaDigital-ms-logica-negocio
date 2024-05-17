@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,8 +23,8 @@ import {ConductorRepository} from '../repositories';
 export class ConductorController {
   constructor(
     @repository(ConductorRepository)
-    public conductorRepository : ConductorRepository,
-  ) {}
+    public conductorRepository: ConductorRepository,
+  ) { }
 
   @post('/conductor')
   @response(200, {
@@ -109,6 +109,30 @@ export class ConductorController {
     @param.filter(Conductor, {exclude: 'where'}) filter?: FilterExcludingWhere<Conductor>
   ): Promise<Conductor> {
     return this.conductorRepository.findById(id, filter);
+  }
+
+  @get('/conductor-paginado')
+  @response(200, {
+    description: 'Array of Conductor model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Conductor, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findToPagination(
+    @param.filter(Conductor) filter?: Filter<Conductor>,
+  ): Promise<object> {
+    const total: number = (await this.conductorRepository.count()).count;
+    const registros: Conductor[] = await this.conductorRepository.find(filter);
+    const respuesta = {
+      registros: registros,
+      totalRegistros: total
+    }
+    return respuesta;
   }
 
   @patch('/conductor/{id}')
