@@ -95,7 +95,7 @@ export class Conductor extends Entity {
   sedeId: number;
 
   @belongsTo(() => ServicioFunerario)
-  servicioFunerarioId: number;
+  servicioFunerarioId?: number;
 
   constructor(data?: Partial<Conductor>) {
     super(data);

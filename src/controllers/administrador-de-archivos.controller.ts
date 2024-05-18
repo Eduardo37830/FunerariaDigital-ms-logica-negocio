@@ -60,6 +60,82 @@ export class AdministradorDeArchivosController {
     return res;
   }
 
+  //@authenticate('admin')
+  @post('/cargar-archivo-conductor', {
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        description: 'archivo a cargar',
+      },
+    },
+  })
+  async cargarArchivoConductor(
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+    @requestBody.file() request: Request,
+  ): Promise<object | false> {
+    const filePath = path.join(__dirname, ConfiguracionGeneral.carpetaArchivosConductores);
+    let res = await this.StoreFileToPath(
+      filePath,
+      ConfiguracionGeneral.campoDeCliente,
+      request,
+      response,
+      ConfiguracionGeneral.extensionesImagenes,
+    );
+    if (res) {
+      const filename = response.req?.file?.filename;
+      if (filename) {
+        return {
+          filename: filename,
+        };
+      }
+    }
+    return res;
+  }
+
+  //@authenticate('admin')
+  @post('/cargar-archivo-beneficiario', {
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        description: 'archivo a cargar',
+      },
+    },
+  })
+  async cargarArchivoBeneficiario(
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+    @requestBody.file() request: Request,
+  ): Promise<object | false> {
+    const filePath = path.join(__dirname, ConfiguracionGeneral.carpetaArchivosBeneficiarios);
+    let res = await this.StoreFileToPath(
+      filePath,
+      ConfiguracionGeneral.campoDeCliente,
+      request,
+      response,
+      ConfiguracionGeneral.extensionesImagenes,
+    );
+    if (res) {
+      const filename = response.req?.file?.filename;
+      if (filename) {
+        return {
+          filename: filename,
+        };
+      }
+    }
+    return res;
+  }
+
   private GetMulterStorageConfig(path: string) {
     var filename: string = '';
     const storage = multer.diskStorage({
@@ -156,9 +232,10 @@ export class AdministradorDeArchivosController {
         filePath = path.join(__dirname, ConfiguracionGeneral.carpetaArchivosClientes);
         break;
       case 2:
-        //other
+        filePath = path.join(__dirname, ConfiguracionGeneral.carpetaArchivosConductores);
         break;
       case 3:
+        filePath = path.join(__dirname, ConfiguracionGeneral.carpetaArchivosBeneficiarios);
         break;
     }
     return filePath;
