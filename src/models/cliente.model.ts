@@ -67,6 +67,7 @@ export class Cliente extends Entity {
   @property({
     type: 'date',
     required: true,
+    default: () => new Date()
   })
   fechaRegistro: Date;
 
@@ -75,6 +76,12 @@ export class Cliente extends Entity {
     required: true,
   })
   activo: boolean;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  _idSeguridad?: string;
 
   @hasMany(() => Plan, {through: {model: () => ClientePlan}})
   plans: Plan[];

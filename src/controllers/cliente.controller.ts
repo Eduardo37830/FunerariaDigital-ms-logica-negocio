@@ -8,6 +8,7 @@ import {
   Where,
 } from '@loopback/repository';
 import {
+  HttpErrors,
   del,
   get,
   getModelSchemaRef,
@@ -38,7 +39,7 @@ export class ClienteController {
     public clienteSolicitudServicioController: ClienteSolicitudServicioFunerarioController, // Inyecta el controlador de cliente-solicitud-servicio-funerario
   ) { }
 
-  @post('/cliente')
+/*   @post('/cliente')
   @response(200, {
     description: 'Cliente model instance',
     content: {'application/json': {schema: getModelSchemaRef(Cliente)}},
@@ -57,6 +58,33 @@ export class ClienteController {
     cliente: Omit<Cliente, 'id'>,
   ): Promise<Cliente> {
     return this.clienteRepository.create(cliente);
+  } */
+
+  @post('/cliente-publico')
+  @response(200, {
+    description: 'Cliente model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Cliente)}},
+  })
+  async create(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Cliente, {
+            title: 'NewCliente',
+            exclude: ['id', 'fechaRegistro'], // Excluye 'id' y 'fechaRegistro'
+          }),
+        },
+      },
+    })
+    cliente: Omit<Cliente, 'id' | 'fechaRegistro'>, // Excluye 'id' y 'fechaRegistro'
+  ): Promise<Cliente> {
+    cliente.activo = true; // Asegúrate de que el campo 'activo' también esté establecido
+
+    try {
+      return await this.clienteRepository.create(cliente);
+    } catch (error) {
+      throw new HttpErrors.InternalServerError('Error al crear el cliente');
+    }
   }
 
   @get('/cliente/count')
