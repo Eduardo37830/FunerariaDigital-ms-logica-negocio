@@ -25,3 +25,4 @@ export * from './paginador-cliente.model';
 export * from './paginador-sede.model';
 export * from './paginador-departamento.model';
 export * from './paginador-ciudad.model';
+export * from './pago-epayco.model';

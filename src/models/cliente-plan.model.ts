@@ -28,6 +28,18 @@ export class ClientePlan extends Entity {
   id?: number;
 
   @property({
+    type: 'string',
+    required: true,
+  })
+  nombre: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  detalles: string;
+
+  @property({
     type: 'number',
     required: true,
   })
@@ -37,13 +49,25 @@ export class ClientePlan extends Entity {
     type: 'date',
     required: true,
   })
-  fecha: string;
+  fechaAdquisicion: Date;
+
+  @property({
+    type: 'date',
+    required: true,
+  })
+  fechaVencimiento: Date;
 
   @property({
     type: 'number',
     required: true,
   })
   cantidadBeneficiarios: number;
+
+  @property({
+    type: 'boolean',
+    required: true,
+  })
+  activo: boolean;
 
   @property({
     type: 'number',

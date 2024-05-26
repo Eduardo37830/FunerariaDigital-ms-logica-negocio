@@ -14,7 +14,6 @@ export namespace ConfiguracionSeguridad {
   export const menuSedeId = "66216c3f415cd3feff84b9fd";
   export const menuSalaId = "66216c62415cd3feff84b9fe";
   export const menuBeneficiarioId = "66216c80415cd3feff84b9ff";
-  export const menuEstadoBeneficiarioId = "66216c9e415cd3feff84ba00";
   export const menuComentarioId = "66216cbe415cd3feff84ba01";
   export const menuSalaChatId = "66216d74415cd3feff84ba05";
   export const menuServicioPlanId = "66216dcd415cd3feff84ba06";

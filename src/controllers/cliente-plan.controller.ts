@@ -15,6 +15,7 @@ import {
   patch,
   post,
   requestBody,
+  response,
 } from '@loopback/rest';
 import {ClientePlan, Plan} from '../models';
 import {
@@ -39,7 +40,7 @@ export class ClientePlanController {
         description: 'Array of Cliente has many Plan through ClientePlan',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Plan)},
+            schema: {type: 'array', items: getModelSchemaRef(ClientePlan)},
           },
         },
       },
@@ -47,9 +48,9 @@ export class ClientePlanController {
   })
   async find(
     @param.path.number('id') id: number,
-    @param.query.object('filter') filter?: Filter<Plan>,
-  ): Promise<Plan[]> {
-    return this.clienteRepository.plans(id).find(filter);
+    @param.query.object('filter') filter?: Filter<ClientePlan>,
+  ): Promise<ClientePlan[]> {
+    return this.clientePlanRepository.find(filter);
   }
   //@authenticate
   @post('/adquirir-plan', {
@@ -102,6 +103,31 @@ export class ClientePlanController {
     }
   }
 
+  @get('/cliente-plan-paginado')
+  @response(200, {
+    description: 'Array of ClientePlan model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Plan, {partial: true}),
+        },
+      },
+    },
+  })
+  async findToPagination(
+    @param.path.number('id') id: number,
+    @param.query.object('filter') filter?: Filter<ClientePlan>, // Updated type to Filter<ClientePlan>
+  ): Promise<object> {
+    const total: number = (await this.clienteRepository.count()).count;
+    const registros: ClientePlan[] = await this.clientePlanRepository.find(filter);
+    const respuesta = {
+      registros: registros,
+      totalRegistros: total
+    }
+    return respuesta;
+  }
+
   @patch('/clientes/{id}/plans', {
     responses: {
       '200': {
@@ -139,5 +165,48 @@ export class ClientePlanController {
     @param.query.object('where', getWhereSchemaFor(Plan)) where?: Where<Plan>,
   ): Promise<Count> {
     return this.clienteRepository.plans(id).delete(where);
+  }
+
+  // Nueva función GET para obtener una relación específica ClientePlan
+  @get('/obtener-plan/{id}', {
+    responses: {
+      '200': {
+        description: 'ClientePlan model instance',
+        content: {'application/json': {schema: getModelSchemaRef(ClientePlan)}},
+      },
+    },
+  })
+  async obtenerPlan(
+    @param.path.number('id') id: number, // Recibimos la ID del ClientePlan desde la ruta
+  ): Promise<ClientePlan> {
+    const clientePlan = await this.clientePlanRepository.findById(id); // Buscamos el ClientePlan por su ID
+
+    if (!clientePlan) {
+      throw new HttpErrors.NotFound(`No se encontró ninguna asociación ClientePlan con la ID ${id}`);
+    }
+
+    return clientePlan;
+  }
+
+
+  // Nueva función DELETE para eliminar una relación específica ClientePlan
+  //@authenticate
+  @del('/eliminar-plan/{id}', {
+    responses: {
+      '200': {
+        description: 'Cliente.Plan DELETE success count',
+        content: {'application/json': {schema: CountSchema}},
+      },
+    },
+  })
+  async eliminarPlan(
+    @param.path.number('id') id: number, // Recibimos la ID del ClientePlan desde la ruta
+  ): Promise<any> {
+    const clientePlanExists = await this.clientePlanRepository.exists(id); // Verificamos si el ClientePlan existe
+
+    if (!clientePlanExists) {
+      throw new HttpErrors.NotFound(`No se encontró ninguna asociación ClientePlan con la ID ${id}`);
+    }
+    await this.clientePlanRepository.deleteById(id); // Eliminamos el ClientePlan por su ID
   }
 }
