@@ -17,4 +17,3 @@ export * from './solicitud-servicio-funerario.repository';
 
 export * from './comentario.repository';
 
-export * from './pago-epayco.repository';
