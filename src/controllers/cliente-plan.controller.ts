@@ -14,6 +14,7 @@ import {
   param,
   patch,
   post,
+  put,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -208,5 +209,32 @@ export class ClientePlanController {
       throw new HttpErrors.NotFound(`No se encontró ninguna asociación ClientePlan con la ID ${id}`);
     }
     await this.clientePlanRepository.deleteById(id); // Eliminamos el ClientePlan por su ID
+  }
+
+  @put('/modificar-plan/{id}', {
+    responses: {
+      '200': {
+        description: 'Cliente.Plan PUT success count',
+        content: {'application/json': {schema: CountSchema}},
+      },
+    },
+  })
+  async modificarPlan(
+    @param.path.number('id') id: number,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(ClientePlan, {partial: true}),
+        },
+      },
+    })
+    clientePlanData: Partial<ClientePlan>,
+  ): Promise<void> {
+    const clientePlanExists = await this.clientePlanRepository.findById(id); // Verificamos si el ClientePlan existe
+
+    if (!clientePlanExists) {
+      throw new HttpErrors.NotFound(`No se encontró ninguna asociación ClientePlan con la ID ${id}`);
+    }
+    return this.clientePlanRepository.updateById(id, clientePlanData); // Actualizamos el registro utilizando el método updateById del repository
   }
 }

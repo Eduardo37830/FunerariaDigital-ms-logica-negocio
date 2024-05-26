@@ -19,7 +19,7 @@ import {
   response,
 } from '@loopback/rest';
 import {PagoEpayco} from '../models';
-import {PagoEpaycoRepository} from '../repositories';
+import {PagoEpaycoRepository} from '../repositories/pago-epayco.repository';
 import {EpaycoService} from '../services';
 
 
