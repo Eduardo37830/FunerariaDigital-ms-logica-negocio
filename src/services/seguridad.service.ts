@@ -42,7 +42,6 @@ export class SeguridadService {
     let Cliente = await this.repositoryCliente.findOne({
       where: {
         correo: credenciales.correo,
-        celular: credenciales.celular
       }
     });
     console.log(Cliente)

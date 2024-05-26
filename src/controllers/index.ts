@@ -43,3 +43,4 @@ export * from './solicitud-servicio-funerario-sala-chat.controller';
 export * from './solicitud-servicio-funerario-servicio-funerario.controller';
 export * from './solicitud-servicio-funerario.controller';
 export * from './servicio-funerario-sala.controller';
+export * from './generar-pqrs.controller';

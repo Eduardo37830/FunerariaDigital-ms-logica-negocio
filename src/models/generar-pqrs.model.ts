@@ -4,9 +4,10 @@ import {Entity, model, property} from '@loopback/repository';
 export class GenerarPqrs extends Entity {
   @property({
     type: 'number',
-    required: true,
+    id: true,
+    generated: true,
   })
-  clienteId: number;
+  id?: number;
 
   @property({
     type: 'string',
@@ -18,7 +19,13 @@ export class GenerarPqrs extends Entity {
     type: 'string',
     required: true,
   })
-  celular: string;
+  nombre: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  tipo: string;
 
   @property({
     type: 'string',
