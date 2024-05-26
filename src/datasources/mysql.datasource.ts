@@ -1,22 +1,23 @@
 import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
+import {ConfiguracionSeguridad} from '../config/seguridad.config';
 
 const config = {
-  /*name: ConfiguracionSeguridad.mysqlName,
+  name: ConfiguracionSeguridad.mysqlName,
   connector: ConfiguracionSeguridad.mysqlConnector,
   host: ConfiguracionSeguridad.mysqlConnectionString,
   port: ConfiguracionSeguridad.mysqlPort,
   user: ConfiguracionSeguridad.mysqlUser,
   password: ConfiguracionSeguridad.mysqlPassword,
-  database: ConfiguracionSeguridad.mysqlDatabase,*/
-  name: 'mysql',
+  database: ConfiguracionSeguridad.mysqlDatabase,
+  /*name: 'mysql',
   connector: 'mysql',
   url: '',
   host: 'localhost',
   port: 3306,
   user: 'root',
   password: 'Jorge1002671250',
-  database: 'funerariadigital'
+  database: 'funerariadigital'*/
 };
 
 // Observe application's life cycle to disconnect the datasource when

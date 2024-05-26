@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,29 +8,28 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
-import {GenerarPqrs} from '../models';
-import {GenerarPqrsRepository} from '../repositories';
 import {ConfiguracionNotificaciones} from '../config/notificaciones.config';
+import {GenerarPqrs} from '../models';
+import {GenerarPqrsRepository} from '../repositories/generar-pqrs.repository';
 import {NotificacionesService} from '../services/notificaciones.service';
-import {service} from '@loopback/core';
 
 export class GenerarPqrsController {
   constructor(
     @repository(GenerarPqrsRepository)
-    public generarPqrsRepository : GenerarPqrsRepository,
+    public generarPqrsRepository: GenerarPqrsRepository,
     @service(NotificacionesService)
     public servicioNotificaciones: NotificacionesService
-  ) {}
+  ) { }
 
   @post('/generar-pqrs')
   @response(200, {
