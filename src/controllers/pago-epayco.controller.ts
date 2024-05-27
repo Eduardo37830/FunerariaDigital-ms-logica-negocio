@@ -20,7 +20,7 @@ import {
 } from '@loopback/rest';
 import {PagoEpayco} from '../models';
 import {PagoEpaycoRepository} from '../repositories/pago-epayco.repository';
-import {EpaycoService} from '../services';
+import {EpaycoService, NotificacionesService} from '../services';
 
 
 export class PagoEpaycoController {
@@ -29,7 +29,19 @@ export class PagoEpaycoController {
     public pagoEpaycoRepository: PagoEpaycoRepository,
     @service(EpaycoService)
     public epaycoService: EpaycoService,
+    @service(NotificacionesService)
+    public servicioNotificaciones: NotificacionesService,
   ) { }
+
+  @post('/payment/token')
+  async createToken(@requestBody() creditInfo: any) {
+    try {
+      const token = await this.epaycoService.createToken(creditInfo);
+      return token;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
 
   @post('/pago-epaycos')
   @response(200, {
@@ -63,14 +75,13 @@ export class PagoEpaycoController {
       currency: {type: 'string'},
       description: {type: 'string'},
     };
-    const respuestaEpayco = await this.epaycoService.crearPagoPrueba(datosPago);
-    console.log('Respuesta de Epayco:', respuestaEpayco);
-    if (respuestaEpayco.success) {
+    //const respuestaEpayco = await this.epaycoService.crearPagoPrueba(datosPago);
+    /*if (respuestaEpayco.success) {
       pago.estado = 'completado';
       console.log('Pago completado:', pago);  // Log para verificar el estado del pago completado
     } else {
       pago.estado = 'fallido';
-    }
+    }*/
 
     await this.pagoEpaycoRepository.updateById(pago.id, pago);
     console.log('Pago creado:', pago);  // Log para verificar el estado del pago creado
@@ -177,4 +188,5 @@ export class PagoEpaycoController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.pagoEpaycoRepository.deleteById(id);
   }
+
 }

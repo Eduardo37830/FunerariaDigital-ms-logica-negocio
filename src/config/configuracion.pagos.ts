@@ -4,3 +4,4 @@ export namespace ConfiguracionPagos {
   export const apiKey = process.env.PRIVATE_KEY;
   export const tokenEpayco = process.env.TOKEN_EPAYCO;
 }
+

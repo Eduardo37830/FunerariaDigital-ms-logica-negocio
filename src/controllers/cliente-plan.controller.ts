@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -18,12 +19,14 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {ConfiguracionPagos} from '../config/configuracion.pagos';
 import {ClientePlan, Plan} from '../models';
 import {
   ClientePlanRepository,
   ClienteRepository,
   PlanRepository,
 } from '../repositories';
+import {NotificacionesService} from '../services';
 
 export class ClientePlanController {
   constructor(
@@ -33,6 +36,8 @@ export class ClientePlanController {
     public planRepository: PlanRepository,
     @repository(ClientePlanRepository)
     public clientePlanRepository: ClientePlanRepository,
+    @service(NotificacionesService)
+    public servicioNotificaciones: NotificacionesService,
   ) { }
 
   @get('/clientes/{id}/plans', {
@@ -96,6 +101,48 @@ export class ClientePlanController {
           `Plan con ID ${clientePlanData.planId} no encontrado`,
         );
       }
+
+      // Configuración de Epayco
+      const epayco = require('epayco-sdk-node')({
+        apiKey: ConfiguracionPagos.apiKey,
+        privateKey: ConfiguracionPagos.privateKey,
+        lang: 'ES',
+        test: true
+      })
+
+      //Datos de la tarjeta de crédito de Prueba de Epaycpo
+      //  --- No cambiar
+      const credit_info = {
+        "card[number]": "4575623182290326",
+        "card[exp_year]": "2025",
+        "card[exp_month]": "12",
+        "card[cvc]": "123",
+        "hasCvv": true //hasCvv: validar codigo de seguridad en la transacción
+      }
+
+      epayco.token.create(credit_info)
+        .then(function (token: any) {
+          console.log(token);
+          console.log("Transacción exitosa" + token);
+        })
+        .catch(function (err: string) {
+          console.log("err: " + err);
+        });
+
+      const customer_info = {
+        token_card: "toke_id",
+        name: cliente.primerNombre,
+        last_name: cliente.primerApellido,
+        email: cliente.correo,
+        default: true,
+        //Optional parameters: These parameters are important when validating the credit card transaction
+        city: cliente.ciudadResidencia,
+        address: cliente.direccion,
+        phone: cliente.celular,
+        cell_phone: "3010000001"
+      }
+
+      console.log('customer_info', customer_info);
 
       // Crea la nueva asociación ClientePlan
       console.log('PLAN AQUIRIDO!!!');
@@ -231,10 +278,223 @@ export class ClientePlanController {
     clientePlanData: Partial<ClientePlan>,
   ): Promise<void> {
     const clientePlanExists = await this.clientePlanRepository.findById(id); // Verificamos si el ClientePlan existe
+    const cliente = await this.clienteRepository.findById(clientePlanData.clienteId);
 
     if (!clientePlanExists) {
       throw new HttpErrors.NotFound(`No se encontró ninguna asociación ClientePlan con la ID ${id}`);
     }
+
+    // Configuración de Epayco
+    const epayco = require('epayco-sdk-node')({
+      apiKey: ConfiguracionPagos.apiKey,
+      privateKey: ConfiguracionPagos.privateKey,
+      lang: 'ES',
+      test: true
+    })
+
+    //Datos de la tarjeta de crédito de Prueba de Epaycpo
+    //  --- No cambiar
+    const credit_info = {
+      "card[number]": "4575623182290326",
+      "card[exp_year]": "2025",
+      "card[exp_month]": "12",
+      "card[cvc]": "123",
+      "hasCvv": true //hasCvv: validar codigo de seguridad en la transacción
+    }
+
+    epayco.token.create(credit_info)
+      .then(function (token: any) {
+        console.log(token);
+        console.log("Transacción exitosa" + token);
+      })
+      .catch(function (err: string) {
+        console.log("err: " + err);
+      });
+
+    const customer_info = {
+      token_card: "toke_id",
+      name: cliente.primerNombre,
+      last_name: cliente.primerApellido,
+      email: cliente.correo,
+      default: true,
+      //Optional parameters: These parameters are important when validating the credit card transaction
+      city: cliente.ciudadResidencia,
+      address: cliente.direccion,
+      phone: cliente.celular,
+      cell_phone: "3010000001"
+    }
+
+    console.log('customer_info', customer_info);
+
+    var plan_info = {
+      id_plan: clientePlanData.id, // Identificador único del plan
+      name: clientePlanData.nombre, // Nombre del plan
+      description: clientePlanData.detalles, // Descripción del plan
+      amount: clientePlanData.tarifa, // Monto del plan
+      currency: "cop", // Moneda (COP en este caso)
+      interval: "month", // Intervalo de tiempo (mes, semana, etc.)
+      interval_count: 1, // Frecuencia del intervalo (cada 1 mes)
+      trial_days: 30 // Días de prueba
+    };
+
+    epayco.plans.create(plan_info)
+      .then(function (plan: ClientePlan) {
+        console.log(plan); // Plan creado con éxito
+      })
+      .catch(function (err: string) {
+        console.log("err: " + err); // Manejo de errores
+      });
+
+    //Pago por pseint
+    var pse_info = {
+      bank: "1022",
+      invoice: "1472050778",
+      description: "pay test",
+      value: "10000",
+      tax: "0",
+      tax_base: "0",
+      currency: "COP",
+      type_person: "0",
+      doc_type: "CC",
+      doc_number: "10358519",
+      name: "testing",
+      last_name: "PAYCO",
+      email: "no-responder@payco.co",
+      country: "CO",
+      cell_phone: "3010000001",
+      ip: "190.000.000.000", /*This is the client's IP, it is required */
+      url_response: "https://ejemplo.com/respuesta.html",
+      url_confirmation: "https://ejemplo.com/confirmacion",
+      metodoconfirmacion: "GET",
+
+      //Los parámetros extras deben ser enviados tipo string, si se envía tipo array generara error.
+      extra1: "",
+      extra2: "",
+      extra3: "",
+      extra4: "",
+      extra5: "",
+      extra6: ""
+
+    }
+    epayco.bank.create(pse_info)
+      .then(function (bank: any) {
+        console.log(bank);
+      })
+      .catch(function (err: string) {
+        console.log("err: " + err);
+      });
+
+    var handler = epayco.checkout.configure({
+      key: '45b960805ced5c27ce34b1600b4b9f54',
+      test: false
+    });
+    var data = {
+      //Parametros compra (obligatorio)
+      name: "Vestido Mujer Primavera",
+      description: "Vestido Mujer Primavera",
+      invoice: "FAC-1234",
+      currency: "cop",
+      amount: "5000",
+      tax_base: "4000",
+      tax: "500",
+      tax_ico: "500",
+      country: "co",
+      lang: "en",
+
+      //Onpage="false" - Standard="true"
+      external: "true",
+
+
+      //Atributos opcionales
+      extra1: "extra1",
+      extra2: "extra2",
+      extra3: "extra3",
+      confirmation: "http://secure2.payco.co/prueba_curl.php",
+      response: "http://secure2.payco.co/prueba_curl.php",
+
+      //Atributos cliente
+      name_billing: "Jhon Doe",
+      address_billing: "Carrera 19 numero 14 91",
+      type_doc_billing: "cc",
+      mobilephone_billing: "3050000000",
+      number_doc_billing: "100000000",
+      email_billing: "jhondoe@epayco.com",
+
+      //atributo deshabilitación método de pago
+      methodsDisable: ["TDC", "PSE", "SP", "CASH", "DP"]
+
+    }
+
+    handler.open(data)
+
     return this.clientePlanRepository.updateById(id, clientePlanData); // Actualizamos el registro utilizando el método updateById del repository
+  }
+
+  @post('/pago-epayco', {
+    responses: {
+      '200': {
+        description: 'ClientePlan model instance',
+        content: {'application/json': {schema: getModelSchemaRef(ClientePlan)}},
+      },
+    },
+  })
+  async pagoEpayco(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(ClientePlan, {
+            title: 'NewClientePlan',
+            exclude: ['id'],
+          }),
+        },
+      },
+    })
+    clientePlanData: Omit<ClientePlan, 'id'>,
+  ): Promise<ClientePlan> {
+
+    const cliente = await this.clienteRepository.findById(clientePlanData.clienteId);
+
+    // Configuración de Epayco
+    const epayco = require('epayco-sdk-node')({
+      apiKey: ConfiguracionPagos.apiKey,
+      privateKey: ConfiguracionPagos.privateKey,
+      lang: 'ES',
+      test: true
+    })
+
+    //Datos de la tarjeta de crédito de Prueba de Epaycpo
+    //  --- No cambiar
+    const credit_info = {
+      "card[number]": "4575623182290326",
+      "card[exp_year]": "2025",
+      "card[exp_month]": "12",
+      "card[cvc]": "123",
+      "hasCvv": true //hasCvv: validar codigo de seguridad en la transacción
+    }
+
+    epayco.token.create(credit_info)
+      .then(function (token: any) {
+        console.log(token);
+        console.log("Transacción exitosa" + token);
+      })
+      .catch(function (err: string) {
+        console.log("err: " + err);
+      });
+
+    const customer_info = {
+      token_card: "toke_id",
+      name: cliente.primerNombre,
+      last_name: cliente.primerApellido,
+      email: cliente.correo,
+      default: true,
+      //Optional parameters: These parameters are important when validating the credit card transaction
+      city: cliente.ciudadResidencia,
+      address: cliente.direccion,
+      phone: cliente.celular,
+      cell_phone: "3010000001"
+    }
+
+    console.log('customer_info', customer_info);
+    return clientePlanData;
   }
 }

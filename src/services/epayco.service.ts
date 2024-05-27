@@ -1,81 +1,81 @@
 import {BindingScope, injectable} from '@loopback/core';
 import {ConfiguracionPagos} from '../config/configuracion.pagos';
 
-const fetch = require('node-fetch');
-const epayco = require('epayco-sdk-node')({
+var epayco = require('epayco-sdk-node')({
   apiKey: ConfiguracionPagos.apiKey,
   privateKey: ConfiguracionPagos.privateKey,
   lang: 'ES',
-  test: true,
-});
-const axios = require('axios');
+  test: true
+})
 
+/*var credit_info = {
+  "card[number]": "4575623182290326",
+  "card[exp_year]": "2025",
+  "card[exp_month]": "12",
+  "card[cvc]": "123",
+  "hasCvv": true //hasCvv: validar codigo de seguridad en la transacción
+}
 
-const createToken = async () => {
-  const creditInfo = {
-    "card[number]": "4575623182290326",
-    "card[exp_year]": "2025",
-    "card[exp_month]": "12",
-    "card[cvc]": "123",
-    "hasCvv": true
-  };
-
-  try {
-    const token = await epayco.token.create(creditInfo);
+epayco.token.create(credit_info)
+  .then(function (token: any) {
     console.log(token);
-    return token;
-  } catch (error) {
-    console.error("Error al crear el token:", error);
-    throw error;
-  }
-};
+  })
+  .catch(function (err: string) {
+    console.log("err: " + err);
+  });
 
+var customer_info = {
+  token_card: "toke_id",
+  name: "Joe",
+  last_name: "Doe",
+  email: "joe@payco.co",
+  default: true,
+  //Optional parameters: These parameters are important when validating the credit card transaction
+  city: "Bogota",
+  address: "Cr 4 # 55 36",
+  phone: "3005234321",
+  cell_phone: "3010000001"
+}*/
 
 @injectable({scope: BindingScope.TRANSIENT})
 export class EpaycoService {
-  constructor() { }
 
-  /*async crearPagoPrueba(monto: number, moneda: string) {
+  constructor() {
+  }
+
+  async createToken(creditInfo: any) {
     try {
-      const datos = {
-        amount: monto,
-        currency: moneda,
-        lang: 'ES',
-        test: true,  // Indicador de pago de prueba
-
-        // API Key y Private Key de prueba
-        apiKey: ConfiguracionPagos.apiKey,
-        privateKey: ConfiguracionPagos.privateKey,
-      };
-
-      const respuesta = await axios.post('https://funerariaDigital.epayco.me/payment/process', datos, createToken);
-      console.log('Respuesta de Epayco:', respuesta.data);  // Log para verificar la respuesta de Epayco
-      return respuesta.data;
+      const token = await epayco.token.create(creditInfo);
+      return token;
     } catch (error) {
-      console.error('Error al enviar la notificación:', error);
-      throw error;
+      throw new Error(error);
     }
-  }*/
+  }
 
-  async crearPagoPrueba(params: any): Promise<any> {
+  async createPlan(planInfo: any): Promise<any> {
     try {
-      // Aquí deberías llamar al endpoint de Epayco para crear la sesión
-      // Supongamos que la API de Epayco espera los parámetros en el body de la solicitud
-      const response = await axios.post('https://api.epayco.co/session', params, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${ConfiguracionPagos.apiKey}`,
-        },
-      });
+      const plan = await epayco.plans.create(planInfo);
+      return plan;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
 
-      if (response.data.success) {
-        return {sessionId: response.data.data.sessionId};
-      } else {
-        throw new Error('Error al crear la sesión');
-      }
-    } catch (error) {
-      console.error('Error al crear la sesión:', error);
-      throw error;
+  async getPlan(idPlan: string): Promise<any> {
+    try {
+      const plan = await epayco.plans.get(idPlan);
+      return plan;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
+
+  async listPlans(): Promise<any> {
+    try {
+      const plans = await epayco.plans.list();
+      return plans;
+    } catch (err: any) {
+      throw new Error(err);
     }
   }
 }
