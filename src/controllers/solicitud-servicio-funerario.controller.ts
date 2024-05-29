@@ -298,8 +298,8 @@ export class SolicitudServicioFunerarioController {
             solicitudServicio.estadoAceptado == true;
 
             const url = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
-            //this.servicioNotificaciones.EnviarNotificacion(datos, url);
-            //await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
+            this.servicioNotificaciones.EnviarNotificacion(datos, url);
+            await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
           } else {
             throw new HttpErrors[401](`Beneficiario no corresponde con la solicitud  o este se encuentra inactivo.`);
           }
@@ -362,8 +362,8 @@ export class SolicitudServicioFunerarioController {
             solicitudServicio.estadoAceptado == true;
 
             const url = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
-            //this.servicioNotificaciones.EnviarNotificacion(datos, url);
-            //await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
+            this.servicioNotificaciones.EnviarNotificacion(datos, url);
+            await this.chatService.enviarCodigoUnico(codigoSalaChat, llaveMaestra);
             break;
           } else {
             throw new HttpErrors.Unauthorized("El beneficiario no se encuentra activo.");
