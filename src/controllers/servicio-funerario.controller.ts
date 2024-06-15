@@ -20,9 +20,11 @@ import {
 } from '@loopback/rest';
 import {ConfiguracionNotificaciones} from '../config/notificaciones.config';
 import {Cliente, Conductor, CredencialesCodigoUnico, Sala, ServicioFunerario} from '../models';
-import {BeneficiarioRepository, ClienteRepository, ConductorRepository, SalaRepository, ServicioFunerarioRepository, SolicitudServicioFunerarioRepository} from '../repositories';
+import {BeneficiarioRepository, ClienteRepository, ConductorRepository, SalaRepository, SedeRepository, ServicioFunerarioRepository, SolicitudServicioFunerarioRepository} from '../repositories';
+import {NotificacionesService} from '../services';
 import {SeguridadService} from '../services/seguridad.service';
 import {SalaController} from './sala.controller';
+import {SedeSalaController} from './sede-sala.controller';
 
 export class ServicioFunerarioController {
   constructor(
@@ -42,6 +44,10 @@ export class ServicioFunerarioController {
     public conductorRepository: ConductorRepository,
     @inject('controllers.SalaController') // Inyecta una instancia del controlador de sala
     private salaController: SalaController,
+    @service(NotificacionesService)
+    public servicioNotificaciones: NotificacionesService,
+    @repository(SedeRepository)
+    public sedeRepository: SedeRepository,
   ) { }
 
   /**
@@ -70,9 +76,10 @@ export class ServicioFunerarioController {
   /**
    * Obtiene las salas disponibles según la hora de asignación y salida del servicio funerario.
    * Se asignan las salas al tercer día de la solicitud y la duración del servicio es de 3 horas.
+   * @param sedeId - ID de la sede para filtrar las salas.
    * @returns Un arreglo de salas disponibles.
    */
-  async obtenerSalasDisponibles(): Promise<Sala[]> {
+  async obtenerSalasDisponibles(sedeId: number): Promise<Sala[]> {
     // Obtener la fecha y hora actual
     const ahora = new Date();
 
@@ -86,8 +93,11 @@ export class ServicioFunerarioController {
     const fechaHoraAsignacionServicio = new Date(fechaHoraInicioServicio);
     const fechaHoraSalidaServicio = new Date(fechaHoraFinServicio);
 
-    // Obtener todas las salas
-    const todasLasSalas = await this.salaRepository.find();
+    // Crear una instancia del controlador SedeSalaController
+    const sedeSalaController = new SedeSalaController(this.sedeRepository);
+
+    // Obtener todas las salas de la sede asignada
+    const todasLasSalas = await sedeSalaController.find(sedeId);
 
     // Filtrar las salas disponibles
     const salasDisponibles = await Promise.all(todasLasSalas.map(async (sala) => {
@@ -101,6 +111,7 @@ export class ServicioFunerarioController {
 
     return salasDisponibles.filter(({disponible}) => disponible).map(({sala}) => sala);
   }
+
 
   // Otener los conductores disponibles
   async obtenerConductoresDisponibles(): Promise<Conductor[]> {
@@ -146,7 +157,7 @@ export class ServicioFunerarioController {
       const cliente = await this.clienteRepository.findById(beneficiario.clienteId);
       console.log("Cliente: ", cliente);
 
-      const salasDisponibles = await this.obtenerSalasDisponibles();
+      const salasDisponibles = await this.obtenerSalasDisponibles(1);
       console.log("Salas disponibles: ", salasDisponibles);
 
       if (solicitud.estadoAceptado) {
@@ -156,6 +167,7 @@ export class ServicioFunerarioController {
 
         for (let sala of salasDisponibles) {
           const conductoresDisponibles = await this.obtenerConductoresDisponibles();
+          console.log("Conductores disponibles: ", conductoresDisponibles);
 
           //Asignar un conductor disponible al servicio funerario
           if (conductoresDisponibles.length > 0) {
@@ -180,6 +192,7 @@ export class ServicioFunerarioController {
             sala.horaSalidaCuerpo = fechaHoraSalidaServicio;
             servicioFunerario.codigoUnicoServicio = codigoUnicoServicio;
             servicioFunerario.tipo = sala.tipo;
+            console.log("Sala actualizada: ", sala);
 
             await this.conductorRepository.updateById(conductor.id, {
               //servicioFunerarioId: servicioFunerario.id // Asignar el ID del servicio funerario al conductor
@@ -204,12 +217,13 @@ export class ServicioFunerarioController {
               contenidoCorreo: contenidoCorreoConductor,
               asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
             };
+            console.log("Datos del correo al cliente: ", datosCorreoCliente);
 
             let url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
             // Enviar correo al Cliente
-            //this.servicioNotificaciones.EnviarNotificacion(datosCorreoCliente, url);
+            this.servicioNotificaciones.EnviarNotificacion(datosCorreoCliente, url);
             // Enviar correo al Conductor
-            //this.servicioNotificaciones.EnviarNotificacion(datosCorreoConductor, url);
+            this.servicioNotificaciones.EnviarNotificacion(datosCorreoConductor, url);
             break; // Salir del bucle ya que hemos asignado un conductor y una sala
           }
         }

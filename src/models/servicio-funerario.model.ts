@@ -41,7 +41,7 @@ export class ServicioFunerario extends Entity {
     type: 'date',
     required: true,
   })
-  fecha: string;
+  fecha: Date;
 
   @property({
     type: 'string',

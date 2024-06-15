@@ -33,7 +33,7 @@ export class PagoEpaycoController {
     public servicioNotificaciones: NotificacionesService,
   ) { }
 
-  @post('/payment/token')
+  /*@post('/payment/token')
   async createToken(@requestBody() creditInfo: any) {
     try {
       const token = await this.epaycoService.createToken(creditInfo);
@@ -41,7 +41,7 @@ export class PagoEpaycoController {
     } catch (error) {
       throw new Error(error);
     }
-  }
+  }*/
 
   @post('/pago-epaycos')
   @response(200, {
@@ -187,6 +187,15 @@ export class PagoEpaycoController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.pagoEpaycoRepository.deleteById(id);
+  }
+
+  @get('/epayco/transacciones')
+  @response(200, {
+    description: 'Array of ePayco transactions',
+    content: {'application/json': {schema: {type: 'array'}}},
+  })
+  async obtenerTransacciones(): Promise<any> {
+    return this.epaycoService.obtenerTransacciones();
   }
 
 }

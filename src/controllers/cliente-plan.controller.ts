@@ -20,7 +20,7 @@ import {
   response,
 } from '@loopback/rest';
 import {ConfiguracionPagos} from '../config/configuracion.pagos';
-import {ClientePlan, Plan} from '../models';
+import {Cliente, ClientePlan, Plan} from '../models';
 import {
   ClientePlanRepository,
   ClienteRepository,
@@ -174,11 +174,12 @@ export class ClientePlanController {
   }
 
   // Nueva función GET para obtener una relación específica ClientePlan
-  @get('/obtener-plan/{id}', {
-    responses: {
-      '200': {
-        description: 'ClientePlan model instance',
-        content: {'application/json': {schema: getModelSchemaRef(ClientePlan)}},
+  @get('/obtener-plan/{id}')
+  @response(200, {
+    description: ' ClientePlan model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(ClientePlan, {includeRelations: true}),
       },
     },
   })
@@ -357,6 +358,36 @@ export class ClientePlanController {
       console.error("Error en la transacción bancaria:", bankTransaction);
       throw new HttpErrors.InternalServerError("Error en la transacción bancaria");
     }*/
+  }
+
+  @get('/clientes-morosos')
+  @response(200, {
+    description: 'Array of morose customers',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Cliente, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async obtenerClientesMorosos(): Promise<Cliente[]> {
+    const ahora = new Date();
+    const planesMorosos = await this.clientePlanRepository.find({
+      where: {
+        fechaVencimiento: {lt: ahora},
+      },
+    });
+
+    const clienteIdsMorosos = planesMorosos.map(plan => plan.clienteId);
+    const clientesMorosos = await this.clienteRepository.find({
+      where: {
+        id: {inq: clienteIdsMorosos},
+      },
+    });
+
+    return clientesMorosos;
   }
 }
 

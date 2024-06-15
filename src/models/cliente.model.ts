@@ -79,7 +79,6 @@ export class Cliente extends Entity {
 
   @property({
     type: 'string',
-    required: true,
   })
   _idSeguridad?: string;
 

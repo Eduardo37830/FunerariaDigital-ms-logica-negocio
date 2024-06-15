@@ -184,7 +184,7 @@ export class ClienteSolicitudServicioFunerarioController {
     WHERE ss.fechaSolicitud BETWEEN '2024-04-30 20:19:30' AND '2024-05-30 14:45:00'
     GROUP BY c.id, c.primerNombre
     ORDER BY COUNT(ss.id) DESC
-    LIMIT 1; -- Cambia 10 por el número deseado de clientes en el resultado
+    LIMIT 1;
     `;
     const result = await this.clienteRepository.dataSource.execute(query);
     return result[0];
