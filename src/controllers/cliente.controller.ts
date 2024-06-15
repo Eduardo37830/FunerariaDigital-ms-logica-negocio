@@ -247,4 +247,21 @@ export class ClienteController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.clienteRepository.deleteById(id);
   }
+
+  /* Obtener cliente por _idseguridad */
+  @get('/cliente-por-idseguridad/{idseguridad}')
+  @response(200, {
+    description: 'Cliente model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Cliente, {includeRelations: true}),
+      },
+    },
+  })
+  async findByIdSeguridad(
+    @param.path.string('idseguridad') idseguridad: string,
+    @param.filter(Cliente, {exclude: 'where'}) filter?: FilterExcludingWhere<Cliente>
+  ): Promise<Cliente | null> {
+    return this.clienteRepository.findOne({where: {_idSeguridad: idseguridad}}, filter);
+  }
 }
