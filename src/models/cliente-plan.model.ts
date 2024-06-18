@@ -46,6 +46,11 @@ export class ClientePlan extends Entity {
   tarifa: number;
 
   @property({
+    type: 'number',
+  })
+  descuento?: number;
+
+  @property({
     type: 'date',
     required: true,
   })

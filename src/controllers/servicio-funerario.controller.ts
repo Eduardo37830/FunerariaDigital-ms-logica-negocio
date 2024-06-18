@@ -144,6 +144,8 @@ export class ServicioFunerarioController {
     servicioFunerario: Omit<ServicioFunerario, 'id'>,
   ): Promise<ServicioFunerario> {
 
+    console.log("Creando servicio funerario: ", servicioFunerario);
+
     try {
       const codigoUnicoServicio = this.servicioSeguridad.crearTextoAleatorio(6);
       console.log("Codigo unico: ", codigoUnicoServicio);
@@ -160,73 +162,76 @@ export class ServicioFunerarioController {
       const salasDisponibles = await this.obtenerSalasDisponibles(1);
       console.log("Salas disponibles: ", salasDisponibles);
 
+      const sala = await this.salaRepository.findById(servicioFunerario.salaId);
+      console.log("Sala: ", sala);
+
+
       if (solicitud.estadoAceptado) {
         if (salasDisponibles.length === 0) {
           throw new Error("No hay salas disponibles para el servicio funerario");
         }
 
-        for (let sala of salasDisponibles) {
-          const conductoresDisponibles = await this.obtenerConductoresDisponibles();
-          console.log("Conductores disponibles: ", conductoresDisponibles);
 
-          //Asignar un conductor disponible al servicio funerario
-          if (conductoresDisponibles.length > 0) {
-            const conductor = conductoresDisponibles[0]; // Tomar el primer conductor disponible
+        const conductoresDisponibles = await this.obtenerConductoresDisponibles();
+        console.log("Conductores disponibles: ", conductoresDisponibles);
 
-            let ahora = new Date(); // Obtener la fecha y hora actual
-            let fechaHoraInicioServicio = ahora.getTime() + 3 * 24 * 60 * 60 * 1000; // 3 días en milisegundos
-            let fechaHoraFinServicio = fechaHoraInicioServicio + 3 * 60 * 60 * 1000; // 3 horas en milisegundos
+        //Asignar un conductor disponible al servicio funerario
+        if (conductoresDisponibles.length > 0) {
+          const conductor = conductoresDisponibles[0]; // Tomar el primer conductor disponible
 
-            // Crear objetos de fecha y hora para la asignación y salida del servicio
-            const fechaHoraAsignacionServicio = new Date(fechaHoraInicioServicio);
-            const fechaHoraSalidaServicio = new Date(fechaHoraFinServicio);
+          let ahora = new Date(); // Obtener la fecha y hora actual
+          let fechaHoraInicioServicio = ahora.getTime() + 3 * 24 * 60 * 60 * 1000; // 3 días en milisegundos
+          let fechaHoraFinServicio = fechaHoraInicioServicio + 3 * 60 * 60 * 1000; // 3 horas en milisegundos
 
-            // Actualizar la sala y el servicio funerario con los datos pertinentes
-            await this.salaRepository.updateById(sala.id, {
-              horaEntradaCuerpo: fechaHoraAsignacionServicio,
-              horaSalidaCuerpo: fechaHoraSalidaServicio,
-              disponible: false,
-              //servicioFunerarioId: servicioFunerario.id
-            });
-            sala.horaEntradaCuerpo = fechaHoraAsignacionServicio;
-            sala.horaSalidaCuerpo = fechaHoraSalidaServicio;
-            servicioFunerario.codigoUnicoServicio = codigoUnicoServicio;
-            servicioFunerario.tipo = sala.tipo;
-            console.log("Sala actualizada: ", sala);
+          // Crear objetos de fecha y hora para la asignación y salida del servicio
+          const fechaHoraAsignacionServicio = new Date(fechaHoraInicioServicio);
+          const fechaHoraSalidaServicio = new Date(fechaHoraFinServicio);
 
-            await this.conductorRepository.updateById(conductor.id, {
-              //servicioFunerarioId: servicioFunerario.id // Asignar el ID del servicio funerario al conductor
-            });
+          // Actualizar la sala y el servicio funerario con los datos pertinentes
+          await this.salaRepository.updateById(sala.id, {
+            horaEntradaCuerpo: fechaHoraAsignacionServicio,
+            horaSalidaCuerpo: fechaHoraSalidaServicio,
+            disponible: false,
+            //servicioFunerarioId: servicioFunerario.id
+          });
+          sala.horaEntradaCuerpo = fechaHoraAsignacionServicio;
+          sala.horaSalidaCuerpo = fechaHoraSalidaServicio;
+          servicioFunerario.codigoUnicoServicio = codigoUnicoServicio;
+          servicioFunerario.tipo = sala.tipo;
+          console.log("Sala actualizada: ", sala);
 
-            // Correo al Cliente
-            const contenidoCorreoCliente = `Envio de datos del servicio funerario: ${servicioFunerario.fecha} Sala Asignada: ${sala.id} Horario: Hora fin del servicio: ${sala.horaEntradaCuerpo} Hora de culminacion del servicio: ${sala.horaSalidaCuerpo} Sede: ${sala.sedeId} Ciudad: ${beneficiario.ciudadResidencia}`;
+          await this.conductorRepository.updateById(conductor.id, {
+            //servicioFunerarioId: servicioFunerario.id // Asignar el ID del servicio funerario al conductor
+          });
 
-            // Correo al Conductor
-            const contenidoCorreoConductor = `Envio de datos del servicio funerario: ${servicioFunerario.fecha} Sala Asignada: ${sala.id} Horario: Hora fin del servicio: ${sala.horaEntradaCuerpo} Hora de culminacion del servicio: ${sala.horaSalidaCuerpo} Sede: ${sala.sedeId} Ciudad: ${beneficiario.ciudadResidencia} Codigo para verificar Datos: ${codigoUnicoServicio}`;
+          // Correo al Cliente
+          const contenidoCorreoCliente = `Envio de datos del servicio funerario: ${servicioFunerario.fecha} Sala Asignada: ${sala.id} Horario: Hora fin del servicio: ${sala.horaEntradaCuerpo} Hora de culminacion del servicio: ${sala.horaSalidaCuerpo} Sede: ${sala.sedeId} Ciudad: ${beneficiario.ciudadResidencia}`;
 
-            const datosCorreoCliente = {
-              correoDestino: cliente.correo,
-              nombreDestino: `${cliente.primerNombre} ${cliente.primerApellido}`,
-              contenidoCorreo: contenidoCorreoCliente,
-              asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
-            };
+          // Correo al Conductor
+          const contenidoCorreoConductor = `Envio de datos del servicio funerario: ${servicioFunerario.fecha} Sala Asignada: ${sala.id} Horario: Hora fin del servicio: ${sala.horaEntradaCuerpo} Hora de culminacion del servicio: ${sala.horaSalidaCuerpo} Sede: ${sala.sedeId} Ciudad: ${beneficiario.ciudadResidencia} Codigo para verificar Datos: ${codigoUnicoServicio}`;
 
-            const datosCorreoConductor = {
-              correoDestino: conductor.correo,
-              nombreDestino: `${conductor.primerNombre} ${conductor.primerApellido}`,
-              contenidoCorreo: contenidoCorreoConductor,
-              asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
-            };
-            console.log("Datos del correo al cliente: ", datosCorreoCliente);
+          const datosCorreoCliente = {
+            correoDestino: cliente.correo,
+            nombreDestino: `${cliente.primerNombre} ${cliente.primerApellido}`,
+            contenidoCorreo: contenidoCorreoCliente,
+            asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+          };
 
-            let url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
-            // Enviar correo al Cliente
-            this.servicioNotificaciones.EnviarNotificacion(datosCorreoCliente, url);
-            // Enviar correo al Conductor
-            this.servicioNotificaciones.EnviarNotificacion(datosCorreoConductor, url);
-            break; // Salir del bucle ya que hemos asignado un conductor y una sala
-          }
+          const datosCorreoConductor = {
+            correoDestino: conductor.correo,
+            nombreDestino: `${conductor.primerNombre} ${conductor.primerApellido}`,
+            contenidoCorreo: contenidoCorreoConductor,
+            asuntoCorreo: ConfiguracionNotificaciones.datosServicioSolicitado,
+          };
+          console.log("Datos del correo al cliente: ", datosCorreoCliente);
+
+          let url = ConfiguracionNotificaciones.urlNotificacionesemailServicioFunerario;
+          // Enviar correo al Cliente
+          this.servicioNotificaciones.EnviarNotificacion(datosCorreoCliente, url);
+          // Enviar correo al Conductor
+          this.servicioNotificaciones.EnviarNotificacion(datosCorreoConductor, url);
         }
+
       }
       return this.servicioFunerarioRepository.create(servicioFunerario);
     } catch (error) {

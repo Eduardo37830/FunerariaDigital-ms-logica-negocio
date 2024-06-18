@@ -279,11 +279,13 @@ export class SolicitudServicioFunerarioController {
       if (clienteConBeneficiarios) {
 
         //console.log('Cliente:', clienteConBeneficiarios);
-        //console.log('Beneficiarios:', clienteConBeneficiarios.beneficiarios);
+        console.log('Beneficiarios:', clienteConBeneficiarios.beneficiarios);
 
         for (let beneficiario of clienteConBeneficiarios!.beneficiarios) {
-          if (beneficiario.id === solicitudServicio.idBeneficiario && beneficiario.activo) {
-            console.log("si existe un beneficirio y esta activo")
+          console.log("Beneficiario actual:", beneficiario);
+          if (beneficiario.id == solicitudServicio.idBeneficiario && beneficiario.activo) {
+
+            console.log("si existe un beneficirio y esta activo" + beneficiario)
 
             // Enviar notificaciones y código único del servicio de se solicito
             const datos = {
@@ -296,6 +298,7 @@ export class SolicitudServicioFunerarioController {
 
             beneficiario.activo = false;
             solicitudServicio.estadoAceptado == true;
+            console.log("solicitud aceptada" + solicitudServicio)
 
             const url = ConfiguracionNotificaciones.urlNotificacionesemailCodigoSalaChat;
             this.servicioNotificaciones.EnviarNotificacion(datos, url);

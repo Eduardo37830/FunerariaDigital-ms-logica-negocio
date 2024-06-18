@@ -173,12 +173,12 @@ export class SalaController {
     await this.salaRepository.deleteById(id);
   }
 
-  @post('/sala/verificar-disponibilidad')
+  @post('/sala/verificar-disponibilidad/{id}')
   @response(200, {
     description: 'Verificar la disponibilidad de la sala para un rango de tiempo específico',
     content: {'application/json': {schema: {type: 'object'}}},
   })
-  async verificarDisponibilidad(
+  async verificarDisponibilidada(
     @requestBody({
       content: {
         'application/json': {
@@ -196,6 +196,83 @@ export class SalaController {
     })
     reserva: {horaEntrada: Date, horaSalida: Date, salaId?: number},
   ): Promise<{disponible: boolean, mensaje?: string}> {
+    const {horaEntrada, horaSalida, salaId} = reserva;
+
+    // Obtener las reservas existentes para la sala en el rango de tiempo especificado
+    const reservasExistentes: Sala[] = await this.salaRepository.find({
+      where: {
+        and: [
+          {id: salaId},
+          {
+            or: [
+              {horaEntradaCuerpo: {between: [horaEntrada, horaSalida]}},
+              {horaSalidaCuerpo: {between: [horaEntrada, horaSalida]}},
+            ],
+          },
+        ],
+      },
+    });
+
+    // Si hay reservas existentes, la sala no está disponible
+    if (reservasExistentes.length > 0) {
+      return {disponible: false, mensaje: 'La sala no está disponible en el horario especificado.'};
+    }
+
+    // Si no hay reservas existentes, la sala está disponible
+    return {disponible: true};
+  }
+
+  @get('/salas-disponibles')
+  @response(200, {
+    description: 'Array of available Sala instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: {type: 'number'},
+              nombre: {type: 'string'},
+              tipo: {type: 'string'},
+              capacidad: {type: 'number'},
+              horaEntradaCuerpo: {type: 'string', format: 'date-time'},
+              horaSalidaCuerpo: {type: 'string', format: 'date-time'},
+              disponible: {type: 'boolean'},
+              sedeId: {type: 'number'},
+              // Incluir cualquier otra propiedad de interés de la silla
+            }
+          }
+        }
+      }
+    }
+  })
+  async salasDisponibles(): Promise<Sala[]> {
+    const todasLasSalas: Sala[] = await this.salaRepository.find();
+    const ahora = new Date();
+    const horaEntrada = ahora; // Aquí defines tu lógica para la hora de entrada deseada
+    const horaSalida = ahora; // Aquí defines tu lógica para la hora de salida deseada
+
+    const salasDisponibles: Sala[] = [];
+
+    // Iterar sobre todas las salas para verificar disponibilidad
+    for (const sala of todasLasSalas) {
+      const {disponible} = await this.verificarDisponibilidad({
+        horaEntrada,
+        horaSalida,
+        salaId: sala.id,
+      });
+
+      if (disponible) {
+        salasDisponibles.push(sala);
+      }
+    }
+
+    return salasDisponibles;
+  }
+
+  // Función existente para verificar disponibilidad, adaptada para salas
+  async verificarDisponibilidad(reserva: {horaEntrada: Date, horaSalida: Date, salaId?: number}): Promise<{disponible: boolean, mensaje?: string}> {
     const {horaEntrada, horaSalida, salaId} = reserva;
 
     // Obtener las reservas existentes para la sala en el rango de tiempo especificado

@@ -111,26 +111,25 @@ export class ClientePlanController {
 
   @get('/cliente-plan-paginado')
   @response(200, {
-    description: 'Array of ClientePlan model instances',
+    description: 'Array de cliente-plan model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(Plan, {partial: true}),
+          items: getModelSchemaRef(ClientePlan, {includeRelations: true}),
         },
       },
     },
   })
   async findToPagination(
-    @param.path.number('id') id: number,
-    @param.query.object('filter') filter?: Filter<ClientePlan>, // Updated type to Filter<ClientePlan>
+    @param.filter(ClientePlan) filter?: Filter<ClientePlan>,
   ): Promise<object> {
-    const total: number = (await this.clienteRepository.count()).count;
+    const total: number = (await this.clientePlanRepository.count()).count;
     const registros: ClientePlan[] = await this.clientePlanRepository.find(filter);
     const respuesta = {
       registros: registros,
-      totalRegistros: total
-    }
+      totalRegistros: total,
+    };
     return respuesta;
   }
 
